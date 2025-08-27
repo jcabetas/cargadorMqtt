@@ -157,11 +157,11 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
 
 uint8_t initModbusMaster(void)
 {
-    palSetLineMode(LINE_TX1,PAL_MODE_ALTERNATE(7) | PAL_STM32_OSPEED_HIGHEST);
-    palSetLineMode(LINE_RX1,PAL_MODE_ALTERNATE(7) | PAL_STM32_OSPEED_HIGHEST);
-    palClearLine(LINE_TXRX1);
-    palSetLineMode(LINE_TXRX1, PAL_MODE_OUTPUT_PUSHPULL);
-    medidorMB = new modbusMaster(&SD1, LINE_TXRX1);
+    palSetLineMode(LINE_TX6,PAL_MODE_ALTERNATE(7) | PAL_STM32_OSPEED_HIGHEST);
+    palSetLineMode(LINE_RX6,PAL_MODE_ALTERNATE(7) | PAL_STM32_OSPEED_HIGHEST);
+    palClearLine(LINE_TXRX6);
+    palSetLineMode(LINE_TXRX6, PAL_MODE_OUTPUT_PUSHPULL);
+    medidorMB = new modbusMaster(&SD6, LINE_TXRX6);
     // inicio medidas
     Ia = new medida(actualizaIa);
     Ptot = new medida(actualizaPtot);

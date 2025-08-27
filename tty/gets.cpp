@@ -127,6 +127,7 @@ void chgetsNoEchoTimeOut(BaseChannel   *pSD, uint8_t *buffer, uint16_t bufferSiz
     buffer[pos]=0;
 }
 
+#ifdef LINE_STHM10
 void chgetsNoEchoTimeOutHM10(BaseChannel   *pSD, uint8_t *buffer, uint16_t bufferSize,systime_t timeout, uint8_t *huboTimeout)
 {
     uint8_t ch;
@@ -163,6 +164,7 @@ void chgetsNoEchoTimeOutHM10(BaseChannel   *pSD, uint8_t *buffer, uint16_t buffe
       }
     buffer[pos]=0;
 }
+#endif
 
 // mensajes desde nextion. Empiezan en @ y terminan en 0
 void chgetNextionNoEchoTimeOut(BaseChannel   *pSD, uint8_t *buffer, uint16_t bufferSize,systime_t timeout, uint16_t *numBytes, uint8_t *huboTimeout)
@@ -360,7 +362,7 @@ int16_t preguntaNumero(BaseChannel *ttyBC, char *msg, uint32_t *numeroPtr, uint3
     return 0;
 }
 
-
+#ifdef LINE_STHM10
 int16_t preguntaNumeroHM10(BaseChannel *ttyBC, const char *msg, uint32_t *numeroPtr, uint32_t valorMin, uint32_t valorMax)
 {
     uint8_t buffer[50];
@@ -441,3 +443,4 @@ int16_t preguntaNumeroHM10Float(BaseChannel *ttyBC, const char *msg, float *nume
     *numeroPtr = resultado;
     return 0;
 }
+#endif

@@ -74,14 +74,15 @@ static const I2CConfig i2ccfg = {
 };
 void initI2C(void)
 {
-    palSetLineMode(LINE_I2C2SDA,PAL_MODE_ALTERNATE(9) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_OSPEED_HIGHEST);
-    palSetLineMode(LINE_I2C2SCL,PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_OSPEED_HIGHEST);
+    palSetLineMode(LINE_I2C1SDA,PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_OSPEED_HIGHEST);
+    palSetLineMode(LINE_I2C1SCL,PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_OSPEED_HIGHEST);
     chThdSleepMilliseconds(50); // espera a que se inicie LCD
     i2cStart(&LCD_I2C, &i2ccfg); // LCD
 }
 
 void initDisplay(void)
 {
+    chEvtObjectInit(&updateLCD_source);
    initI2C();
 #ifdef LCD
     lcd_I2Cinit();
@@ -93,7 +94,10 @@ void initDisplay(void)
     ssd1306Init();
 #endif
     if (!procesoLCD)
+    {
         procesoLCD = chThdCreateStatic(waLCD, sizeof(waLCD), NORMALPRIO, threadLCD, NULL);
+        chThdSleepMilliseconds(50); // espera a que arranque el thread
+    }
 }
 
 

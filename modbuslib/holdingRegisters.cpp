@@ -80,6 +80,10 @@ uint8_t holdingRegister::setValorInterno(uint16_t valor)
 
 uint8_t holdingRegister::setValorInternoSinGrabar(uint16_t valor)
 {
+    if (!valorNuevoEsOk(valor))
+    {
+        return 1;   // algo ha ido mal
+    }
     valInterno = valor;
     return 0;
 }

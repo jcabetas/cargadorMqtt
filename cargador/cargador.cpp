@@ -20,6 +20,7 @@ extern "C"
 thread_t *procesoCargador = NULL;
 cargador *cargKona;
 extern medida *Ia;
+extern const char *cocheStr[5];
 
 cargador::cargador(void)
 {
@@ -32,9 +33,9 @@ cargador::cargador(void)
 void cargador::initReles(void)
 {
     dsCambioRele2 = 0;
-    palSetLineMode(LINE_LED_RELE1, PAL_MODE_OUTPUT_PUSHPULL);
+    palSetLineMode(LINE_RELE1, PAL_MODE_OUTPUT_PUSHPULL);
     palSetLineMode(LINE_RELE2, PAL_MODE_OUTPUT_PUSHPULL);
-    palClearLine(LINE_LED_RELE1);
+    palClearLine(LINE_RELE1);
     palClearLine(LINE_RELE2);
 }
 
@@ -45,12 +46,12 @@ void cargador::ponReles(void)
     if (conexCocheIR->getValor() >= 3) // coche pide
     {
         rele1 = 1;
-        palSetLine(LINE_LED_RELE1);
+        palSetLine(LINE_RELE1);
     }
     else
     {
         rele1 = 0;
-        palClearLine(LINE_LED_RELE1);
+        palClearLine(LINE_RELE1);
     }
     contactor1IR->setValor(rele1);
 
@@ -122,14 +123,22 @@ void cargador::incrementaTimers(uint16_t incds)
             dsCambioRele2 = MAXDSCAMBIORELE;
     }
     dsSinModbus = tLastMsgRxIR->getValor();
-    if (dsSinModbus<timeOutControlHR->getValor())
+    if (dsSinModbus<600)
     {
         dsSinModbus += incds;
-        if (dsSinModbus > timeOutControlHR->getValor())
-            dsSinModbus = timeOutControlHR->getValor();
+        if (dsSinModbus > 600)
+            dsSinModbus = 600;
         tLastMsgRxIR->setValor(dsSinModbus);
     }
 }
+
+void cargador::ponEstadoEnLCD(void)
+{
+    char bufferLCD[25];
+    snprintf(bufferLCD,sizeof(bufferLCD),"%s Isp:%.1f",cocheStr[cargKona->getEstadoRes()], 0.01f*IsetpointIR->getValor());
+    ponEnColaLCD(0,bufferLCD);
+}
+
 
 void cargador::bucleCargador(void)
 {
@@ -141,26 +150,27 @@ void cargador::bucleCargador(void)
     controlIntensidad();
     ponReles();
     incrementaTimers(5);
+    ponEstadoEnLCD();
 }
 
 
 static THD_WORKING_AREA(waCargador, 1024);
 static THD_FUNCTION(threadCargador, arg) {
     (void) arg;
-    uint32_t valorActual;
-    uint32_t valorActualJ;
-    char bufferLCD[25];
+//    uint32_t valorActual;
+//    uint32_t valorActualJ;
+//    char bufferLCD[25];
     chRegSetThreadName("Cargador");
     while (true) {
         cargKona->bucleCargador();
-        valorActual = ADC1->DR;
-        valorActualJ = ADC1->JDR1;
-        uint32_t htr = ADC1->HTR;
-        uint32_t ltr = ADC1->LTR;
-        snprintf(bufferLCD,sizeof(bufferLCD),"htr:%ld  ltr:%ld  ",htr,ltr);
-        ponEnColaLCD(2,bufferLCD);
-        snprintf(bufferLCD,sizeof(bufferLCD),"ADC:%ld  J:%ld  ",valorActual,valorActualJ);
-        ponEnColaLCD(3,bufferLCD);
+//        valorActual = ADC1->DR;
+//        valorActualJ = ADC1->JDR1;
+//        uint32_t htr = ADC1->HTR;
+//        uint32_t ltr = ADC1->LTR;
+//        snprintf(bufferLCD,sizeof(bufferLCD),"htr:%ld  ltr:%ld  ",htr,ltr);
+//        ponEnColaLCD(2,bufferLCD);
+//        snprintf(bufferLCD,sizeof(bufferLCD),"ADC:%ld  J:%ld  ",valorActual,valorActualJ);
+//        ponEnColaLCD(3,bufferLCD);
         chThdSleepMilliseconds(500);
     }
 }

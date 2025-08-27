@@ -302,17 +302,18 @@ void cargador::initADC(void)
 {
     // La senyal PWN sale de PA15-TIM2CH1
     // input en PA1 ADC1IN1
-    // Muestreamos IN1 como regular usando TIM2CH3 y como injected usando TIM3CH4
+    // Muestreamos IN1 como regular usando TIM2CH3 y como injected usando TIM2CH4
 
     palSetLineMode(LINE_ADC, PAL_MODE_INPUT_ANALOG);
 
     rccEnableADC1(FALSE);
     ADC1->CR1 = 0;
     ADC1->CR2 = ADC_CR2_ADON; //  | ADC_CR2_RSTCAL; parece que stm32f767 no tiene calibracion
-    // TIM2-CH3  (sin salida) Trigger para regular ADC
-    // TIM3-CH4  (sin salida) Trigger para Injected ADC
+    // TIM2-CH2  (sin salida) Trigger para regular ADC
+    // TIM2-CH1  (sin salida) Trigger para Injected ADC
     ADC1->CR1   = ADC_CR1_SCAN | ADC_CR1_AWDEN | ADC_CR1_AWDIE;
-    ADC1->CR2 = ADC_CR2_ADON | ADC_CR2_EXTEN_FALLING  | ADC_CR2_EXTSEL_SRC(0b0100) | (0b10<<20) | (0b0101<<16); //ADC_CR2_JEXTEN_FALLING + JEXTSEL(TIM3CH4)
+//    ADC1->CR2 = ADC_CR2_ADON | ADC_CR2_EXTEN_FALLING  | ADC_CR2_EXTSEL_SRC(0b0011) | (0b10<<20) | (0b0101<<16); //ADC_CR2_JEXTEN_FALLING + JEXTSEL(TIM3CH4)
+    ADC1->CR2 = ADC_CR2_ADON | ADC_CR2_EXTEN_FALLING  | ADC_CR2_EXTSEL_SRC(0b0011) | (0b10<<20) | (0b0010<<16); //ADC_CR2_JEXTEN_FALLING + JEXTSEL(TIM2CH0)
     ADC1->SMPR1 = 0;//ADC_SMPR1_SMP_AN10(ADC_SAMPLE_144);
     ADC1->SMPR2 = ADC_SMPR2_SMP_AN1(ADC_SAMPLE_480);
     ADC1->SQR1  = ADC_SQR1_NUM_CH(1);

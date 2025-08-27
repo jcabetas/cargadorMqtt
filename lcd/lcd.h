@@ -10,7 +10,7 @@
 
 #include <inttypes.h>
 
-#define LCD_I2C (I2CD2)
+#define LCD_I2C (I2CD1)
 
 #define LCD
 #undef SSD1306

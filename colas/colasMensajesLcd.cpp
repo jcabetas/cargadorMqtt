@@ -17,6 +17,7 @@
 
 #define NUMMSGLCDENCOLA  5
 
+extern event_source_t updateLCD_source;
 mutex_t MtxMsgLcd;
 
 extern "C"
@@ -42,21 +43,20 @@ void cogerMsgLcdDeCola(uint16_t pos, void *ptrStructDestino)
     strncpy((char *)ptrMsg->msg, (char *)msgLcd[pos].msg,sizeof(ptrMsg->msg));
 }
 
-void msgParaLCD(const char *msg,uint8_t filaPar)
-{
-    struct msgLcd_t msgLcd;
-    msgLcd.fila = filaPar;
-    strncpy((char *)msgLcd.msg, msg, sizeof(msgLcd.msg));
-    putQueu(&colaMsgLcd, &msgLcd);
-    chEvtBroadcast(&hayMsgParaLCD_source);
-}
+//void msgParaLCD(const char *msg,uint8_t filaPar)
+//{
+//    struct msgLcd_t msgLcd;
+//    msgLcd.fila = filaPar;
+//    strncpy((char *)msgLcd.msg, msg, sizeof(msgLcd.msg));
+//    putQueu(&colaMsgLcd, &msgLcd);
+//    chEvtBroadcast(&hayMsgParaLCD_source);
+//}
 
 void initColaMsgLcd(void)
 {
     initQueu(&colaMsgLcd, &MtxMsgLcd, NUMMSGLCDENCOLA, ponerMsgLcdEnCola, cogerMsgLcdDeCola);
 }
 
-extern event_source_t updateLCD_source;
 
 uint8_t ponEnColaLCD(uint8_t fila, const char *msg)
 {

@@ -37,6 +37,7 @@ public:
     void incrementaTimers(uint16_t ds);
     void setEstadoRes(estadoRes_t estR);
     estadoRes_t getEstadoRes(void);
+    void ponEstadoEnLCD(void);
     void initADC(void);
     int8_t init(void);
 };

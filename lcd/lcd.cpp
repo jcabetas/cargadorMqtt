@@ -206,23 +206,23 @@ void lcd_I2Cinit(void)
   tx_data[0] = 0;
   lcd_addr = 0x27;
   hayLcd = 1;
-  i2cAcquireBus(&I2CD2);
-  status = i2cMasterTransmitTimeout(&I2CD2, lcd_addr, tx_data, 1 , rx_data, 0, TIME_MS2I(100));
+  i2cAcquireBus(&LCD_I2C);
+  status = i2cMasterTransmitTimeout(&LCD_I2C, lcd_addr, tx_data, 1 , rx_data, 0, TIME_MS2I(100));
   if (status!=MSG_OK)
   {
-      i2cStop(&I2CD2);
+      i2cStop(&LCD_I2C);
       initI2C();
       lcd_addr = 0x3F;
-      status = i2cMasterTransmitTimeout(&I2CD2, lcd_addr, tx_data, 1 , rx_data, 0, TIME_MS2I(100));
+      status = i2cMasterTransmitTimeout(&LCD_I2C, lcd_addr, tx_data, 1 , rx_data, 0, TIME_MS2I(100));
       if (status!=MSG_OK)
       {
-          i2cStop(&I2CD2);
-          i2cReleaseBus(&I2CD2);
+          i2cStop(&LCD_I2C);
+          i2cReleaseBus(&LCD_I2C);
           hayLcd = 0;
           return;
       }
   }
-  i2cReleaseBus(&I2CD2);
+  i2cReleaseBus(&LCD_I2C);
   // ahora a por la inicializacion
   _backlightval = LCD_NOBACKLIGHT;
   displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;

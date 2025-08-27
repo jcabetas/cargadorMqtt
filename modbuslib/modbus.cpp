@@ -221,6 +221,7 @@ uint8_t modbus::escribeHR(bool useDefaultValues)
 uint8_t modbus::leeHR(void)
 {
   //chprintf(ttyCOM,"Leo variables\n");
+  uint8_t hayError = 0;
   chMtxLock(&mtxUsandoW25q16);
   uint16_t hayW25q16 = W25Q16_start();
   if (hayW25q16)
@@ -244,8 +245,19 @@ uint8_t modbus::leeHR(void)
           if (hr->esGrabable())
           {
               uint16_t valorLeido = W25Q16_read_u16(0, 2+v*2);
-              hr->setValorInternoSinGrabar(valorLeido);
+              uint8_t error = hr->setValorInternoSinGrabar(valorLeido);
+              if (error)
+                  hayError = 1;
           }
+      }
+      if (hayError)
+      {
+          spiStop(&SPID1);
+          chMtxUnlock(&mtxUsandoW25q16);
+          escribeHR(true); //reseteaEeprom();
+          // volvemos a pillar la memoria
+          chMtxLock(&mtxUsandoW25q16);
+          W25Q16_start();
       }
   }
   spiStop(&SPID1);

@@ -139,10 +139,9 @@ CPPSRC = $(ALLCPPSRC) \
          calendar/rtcV2UTC.cpp calendar/calendarUTC.cpp \
          colas/colas.cpp colas/colasMensajesRx.cpp colas/colasMensajesTx.cpp colas/colasMensajesLcd.cpp \
          modbuslib/crc.cpp modbuslib/holdingRegisters.cpp modbuslib/inputRegisters.cpp \
-         modbus/slaveMB.cpp modbus/masterMB.cpp \
+         modbus/slaveMB.cpp \
          modbuslib/modbus.cpp modbuslib/modbusMaestro.cpp modbuslib/modbusSlave.cpp \
          dispositivos/dispositivos.cpp dispositivos/sdm120ct.cpp dispositivos/medida.cpp  \
-         threadPulsador.cpp \
          cargador/tests.cpp cargador/oscilador.cpp cargador/adc.cpp cargador/cargador.cpp cargador/controlCarga.cpp
          
          
@@ -181,7 +180,7 @@ UDEFS = -DCHPRINTF_USE_FLOAT=TRUE
 UADEFS =
 
 # List all user directories here
-UINCDIR = $(CHIBIOS)/os/hal/lib/streams usbSource cfg w25q16 variables tty calendar lcd colas ssd1306 modbus modbuslib dispositivos cargador
+UINCDIR = $(CHIBIOS)/os/hal/lib/streams usbSource cfg w25q16 variables tty json calendar lcd colas ssd1306 modbus modbuslib dispositivos cargador
 # List the user directory to look for the libraries here
 ULIBDIR =
 

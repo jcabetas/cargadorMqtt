@@ -19,16 +19,13 @@
 #include "lcd.h"
 #include <stdio.h>
 
-void initSerial(void);
 void initColas(void);
 void initDisplay(void);
 int8_t initModbusSlave(void);
-int8_t initModbusMaster(void);
-void initHM10(void);
-void initPulsador(void);
 void initCargador(void);
+void initSerial(void);
 
-extern event_source_t updateLCD_source;
+extern event_source_t enviarCoche_source;
 
 /*
  * Cargador STM32 modbus
@@ -37,19 +34,12 @@ extern event_source_t updateLCD_source;
 int main(void) {
   halInit();
   chSysInit();
-
-  chEvtObjectInit(&updateLCD_source);
-  initSerial();
+  chEvtObjectInit(&enviarCoche_source);
   initColas();
   initDisplay();
   initModbusSlave();
-  initModbusMaster();
-  initHM10();
-  initPulsador();
   initCargador();
-
-
-
+  initSerial();
   while (1==1) {
       chThdSleepMilliseconds(1000);
   }
