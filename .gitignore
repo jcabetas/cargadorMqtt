@@ -1,0 +1,10 @@
+/build/
+/debug/
+/STM32F407 (flash and run).launch
+/STM32F407 (run).launch
+*.d
+*.lst
+.dep
+.cproject
+/.Makefile.swp
+version.cpp
