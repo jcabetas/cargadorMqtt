@@ -93,35 +93,33 @@ public:
     void addms(uint16_t ms);
 };
 
-
-class vacon : public dispositivo
+class sdm630ct : public dispositivo
 {
-    // SDM120CT MedidorFlexo 2
+    // SDM630CT MedidorFlexo 2
 protected:
-    modbusMaster *modbusConectado;
     char nombre[15];
-    uint16_t direccion;
+    uint8_t direccion;
     uint8_t  erroresSeguidos;
     uint8_t  numMedidas;
-    float *ptrMed[MAXMEDIDAS];
+    medida *ptrMed[MAXMEDIDAS];
     uint16_t tipoMed[MAXMEDIDAS];
     char descrMed[MAXMEDIDAS][NOMBRELENGTH];
     uint16_t msUpdateMaxMed[MAXMEDIDAS];
     uint16_t msDesdeUpdate[MAXMEDIDAS];
     uint16_t msDelay; // tiempo real de respuesta
 public:
-    vacon(modbusMaster *modbusPtr, const char *nombrePar);
-    ~vacon();
-    uint8_t attachMedida(float *ptrMedPar, const char *tipoMedida, uint16_t msUpdatePar, const char *descrPar);
+    sdm630ct(modbusMaster *modbusPtr, const char *nombrePar, uint8_t dirPar);
+    ~sdm630ct();
+    uint8_t attachMedida(medida *ptrMedPar, const char *tipoMedida, uint16_t msUpdatePar, const char *descrPar);
     void changeID(uint8_t oldId, uint8_t newId, uint8_t *error);
     uint8_t usaBus(void);
-    void leer(uint16_t *valorInt, uint16_t addressReg, uint8_t *error);
-    void leerTip(float *valor, uint8_t tipMedida, uint8_t *error);
+    void leer(float *valor, uint16_t addressReg, uint8_t *error);
     uint16_t diDir(void);
     const char *diTipo(void);
     char *diNombre(void);
     int8_t init(void);
     void addms(uint16_t ms);
 };
+
 
 #endif /* DISPOSITIVOS_H_ */

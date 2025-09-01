@@ -2,14 +2,26 @@
 
 ## Características:
   El cargador gestiona dos relés (uno para fase A y neutro, y otro para fases adicionales B y C)
-  Tiene dos interfaces modbus, uno para conexion desde un ordenador, y otro para conexion opcional de medidor
-  Se puede configurar también por terminal serie bluetooth.
-
+  Se comunica por mqtt a home-assistant mediante un XiaoC6, y un interfaz modbus para el medidor
+  
 ## Modos de funcionamiento:
-  El cargador puede funcionar de dos modos:
-  - Manual: se usa setpoint manual de intensidad, y se activan los relés segun se ha configurado
-  - Modbus intensidad: si se recibe setpoint intensidad, se fija PWM. La configuración de los relés se fijan por modbus
-  Si no se recibe modbus durante un tiempo, pasamos a funcionar manual
+  Xiao funciona de manera transparente entre Mqtt y STM32. La configuración inicial del STM32 es 16A monofásico.
+  La comunicación del cargador (definido por su nombre, p.e. "Kona") se hace:
+  - La configuración se hace enviando al topic "Kona/config" un JSON con los siguientes valores:
+    * imax, imin, numfases, numcontactores, paroconcontactores, modelomedidor, idmodbus, baudmodbus
+    Si no recibe ajustes, se queda en imax y corta con contactores
+  - Cuando arranca el STM32, le pide a Xiao que se configure en home assistant pasandole el numero de fases. Es un
+    json tipo "{"orden":"conecta","numfases":"3"}
+    Si cambia el numero de fases por configuración recibida, le puede volver a enviar petición de reenganche  
+    Cuando esté configurado, Xiao enviará a STM32 "{"orden":"estado","conectado":"1", "numfases":"3"}
+  - En cualquier momento STM32 puede preguntar estado a Xiao con json "{"orden":"estado"}  
+  - Ajuste, puede ser por:
+    * Isp (enviando al topic "Kona/isp/set" un json {"isp":"13.2"}
+    * Psp (idem con "psp")
+    Si no recibe instrucciones durante 30s, se queda ajustado a Imax
+  - Envio de estados a homeassistant enviando al topic "Kona/state" un json con valores isp, coche (estado del cargador) y potencia
+    A futuro añadir Preal, kWh cargados, Ia (Ib e Ic si es trifásico)
+  
 
 ## Gestion de Imin e Isp  
   - Si la Isp<Imin, se ajusta Isp=Imin sin dar error modbus

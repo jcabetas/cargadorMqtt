@@ -24,31 +24,15 @@ void error(const char *)
 }
 
 
-//class holdingRegister
-//{
-//protected:
-//    char nombre[25];
-//    uint16_t valInterno;
-//    uint8_t posicion;
-//    bool grabable;
-//    static mutex_t mtxUsandoW25q16;
-//    void graba(void);
-//public:
-//    holdingRegister(uint8_t pos, const char *nombre, bool grabable);
-//    uint16_t getValorInterno(void);
-//    uint8_t  setValorInterno(uint16_t valor);
-//    bool esGrabable(void);
-//};
 
-modbusSlave *holdingRegister::mbSlave = NULL;
-
-holdingRegister::holdingRegister(uint8_t pos, const char *nombrePar, bool grabablePar)
+holdingRegister::holdingRegister(uint8_t pos, const char *nombrePar, bool grabablePar, registrosModbus *padreReg)
 {
     strncpy(nombre, nombrePar, sizeof(nombre));
     valInterno = 0; //¿aqui?
     grabable = grabablePar;
     posicion = pos;
     funcionHayError = NULL;
+    padreRegistros = padreReg;
 }
 
 uint8_t holdingRegister::getPosicion(void)
@@ -73,8 +57,8 @@ uint8_t holdingRegister::setValorInterno(uint16_t valor)
     if (funcionHayError!=NULL && funcionHayError(valor))
         return 1;
     valInterno = valor;
-    if (mbSlave)
-        mbSlave->grabaHR(this);
+    if (grabable)
+        padreRegistros->grabaHR(this);
     return 0;
 }
 
@@ -103,27 +87,9 @@ char *holdingRegister::getNombre(void)
     return nombre;
 }
 
-void holdingRegister::setMBSlave(modbusSlave *mbSlavePar)
-{
-    mbSlave = mbSlavePar;
-}
 
-//class holdingRegisterInt2Ext : public holdingRegister
-//{
-//private:
-//    uint32_t valExternoDefecto;
-//    uint16_t numOpciones;
-//    const uint32_t *valInt2Ext;
-//    const char *descValInt[10];
-//public:
-//    holdingRegisterInt2Ext(uint8_t pos, const char *nombre, const uint32_t int2ext[], uint32_t opcExternoDefault, bool grabable);
-//    uint16_t getValorDefecto(void);
-//    uint32_t getValor(void);
-//    uint8_t  setValor(uint32_t valor);
-//    uint8_t  validaValor(uint32_t valor);
-//};
 holdingRegisterInt2Ext::holdingRegisterInt2Ext(uint8_t pos, const char *nombrePar, const uint32_t int2ext[], uint16_t numOpcionesPar,
-                                               uint32_t opcExternoDefault,bool grabablePar) : holdingRegister(pos, nombrePar, grabablePar)
+                                               uint32_t opcExternoDefault,bool grabablePar, registrosModbus *padreReg) : holdingRegister(pos, nombrePar, grabablePar, padreReg)
 {
     uint16_t i;
     valExternoDefecto = opcExternoDefault;
@@ -140,6 +106,7 @@ holdingRegisterInt2Ext::holdingRegisterInt2Ext(uint8_t pos, const char *nombrePa
     if (i > numOpciones)
         error("HR: valor invalido");
     valInternoDefecto = valInterno;
+    padreRegistros = padreReg;
 }
 
 uint8_t holdingRegisterInt2Ext::setValor(uint32_t valor)
@@ -177,24 +144,9 @@ bool holdingRegisterInt2Ext::valorNuevoEsOk(uint16_t nuevoValor)
         return false;
 }
 
-//class holdingRegisterOpciones: public holdingRegister
-//{
-//private:
-//    uint32_t valDefecto;
-//    uint16_t numOpciones;
-//    const char *descValInt[10];
-//public:
-//    holdingRegisterOpciones(uint8_t pos, const char *nombre,const char *opcionesStr[3], uint16_t numOpciones, uint16_t opcDefault, bool grabable);
-//    uint16_t getValor(void);
-//    uint8_t setValor(uint16_t);
-//    char *getDescripcion(void);
-//    char *getDescripcion(uint16_t valor);
-//    uint16_t getNumOpciones(void);
-//};
-
 
 holdingRegisterOpciones::holdingRegisterOpciones(uint8_t pos, const char *nombrePar,const char *opcionesStr[],  uint16_t numOpcionesPar,
-                                            uint16_t opcDefault , bool grabablePar) : holdingRegister(pos, nombrePar, grabablePar)
+                                            uint16_t opcDefault , bool grabablePar, registrosModbus *padreReg) : holdingRegister(pos, nombrePar, grabablePar, padreReg)
 {
     numOpciones = numOpcionesPar;
     if (opcDefault>=numOpciones)
@@ -210,7 +162,7 @@ holdingRegisterOpciones::holdingRegisterOpciones(uint8_t pos, const char *nombre
 }
 
 holdingRegisterOpciones::holdingRegisterOpciones(uint8_t pos, const char *nombrePar,const char *opcionesStr[],  uint16_t numOpcionesPar,
-                                            uint16_t opcDefault , bool grabablePar, functionCheckPtr funcionPar) : holdingRegister(pos, nombrePar, grabablePar)
+                                            uint16_t opcDefault , bool grabablePar, functionCheckPtr funcionPar, registrosModbus *padreReg) : holdingRegister(pos, nombrePar, grabablePar, padreReg)
 {
     numOpciones = numOpcionesPar;
     if (opcDefault>=numOpciones)
@@ -263,23 +215,9 @@ uint16_t holdingRegisterOpciones::getNumOpciones(void)
     return numOpciones;
 }
 
-//class holdingRegisterFloat: public holdingRegister
-//{
-//private:
-//    float valDefecto;
-//    float valMin;
-//    float valMax;
-//    float escala;
-//public:
-//    holdingRegisterInt2Ext(uint8_t pos, const char *nombre, float opcDefecto, float valMinPar, float valMaxPar, float escala, bool grabable);
-//    float getValorDefecto(void);
-//    float getValorMax(void);
-//    float getValorMin(void);
-//    uint8_t setValor(float valor);
-//    float  getValor(void);
-//};
+
 holdingRegisterFloat::holdingRegisterFloat(uint8_t pos, const char *nombrePar, float valMinPar,
-                                           float valMaxPar, float opcDefecto, float escalaPar, bool grabablePar) : holdingRegister(pos, nombrePar, grabablePar)
+                                           float valMaxPar, float opcDefecto, float escalaPar, bool grabablePar, registrosModbus *padreReg) : holdingRegister(pos, nombrePar, grabablePar, padreReg)
 {
     valDefecto = opcDefecto;
     escala = escalaPar;
@@ -291,7 +229,7 @@ holdingRegisterFloat::holdingRegisterFloat(uint8_t pos, const char *nombrePar, f
 }
 
 holdingRegisterFloat::holdingRegisterFloat(uint8_t pos, const char *nombrePar, float valMinPar, float valMaxPar, float opcDefecto,
-                                           float escalaPar, bool grabablePar, functionCheckPtr funcionPar) : holdingRegister(pos, nombrePar, grabablePar)
+                                           float escalaPar, bool grabablePar, functionCheckPtr funcionPar, registrosModbus *padreReg) : holdingRegister(pos, nombrePar, grabablePar, padreReg)
 {
     valDefecto = opcDefecto;
     escala = escalaPar;
@@ -342,22 +280,9 @@ float holdingRegisterFloat::getEscala(void)
     return escala;
 }
 
-//class holdingRegisterInt: public holdingRegister
-//{
-//private:
-//    uint16_t valDefecto;
-//    uint16_t valMin;
-//    uint16_t valMax;
-//public:
-//    holdingRegisterInt(uint8_t pos, const char *nombre, uint16_t opcMin, uint16_t opcMax, uint16_t opcDefault, bool grabable);
-//    uint16_t getValorDefecto(void);
-//    uint16_t getValorMax(void);
-//    uint16_t getValorMin(void);
-//    uint8_t  setValor(uint16_t valor);
-//    uint16_t validaValor(uint16_t valor);
-//};
+
 holdingRegisterInt::holdingRegisterInt(uint8_t pos, const char *nombrePar, uint16_t opcMin, uint16_t opcMax
-                                       , uint16_t opcDefault, bool grabablePar) : holdingRegister(pos, nombrePar, grabablePar)
+                                       , uint16_t opcDefault, bool grabablePar, registrosModbus *padreReg) : holdingRegister(pos, nombrePar, grabablePar, padreReg)
 {
     valDefecto = opcDefault;
     valInterno = opcDefault;
@@ -369,7 +294,7 @@ holdingRegisterInt::holdingRegisterInt(uint8_t pos, const char *nombrePar, uint1
 
 
 holdingRegisterInt::holdingRegisterInt(uint8_t pos, const char *nombrePar, uint16_t opcMin, uint16_t opcMax
-                                       , uint16_t opcDefault, bool grabablePar, functionCheckPtr funcionPar) : holdingRegister(pos, nombrePar, grabablePar)
+                                       , uint16_t opcDefault, bool grabablePar, functionCheckPtr funcionPar, registrosModbus *padreReg) : holdingRegister(pos, nombrePar, grabablePar, padreReg)
 {
     valDefecto = opcDefault;
     valInterno = opcDefault;

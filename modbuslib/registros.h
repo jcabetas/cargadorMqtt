@@ -21,8 +21,13 @@ using namespace chibios_rt;
 #define HR_IDMODBUSLLAMADOR 22
 
 class modbusSlave;
+class holdingRegister;
+class inputRegister;
+class registrosModbus;
+
 
 typedef bool(*functionCheckPtr)(uint16_t nuevoValorInterno);
+
 
 class holdingRegister
 {
@@ -34,10 +39,9 @@ protected:
     functionCheckPtr funcionHayError;
     bool grabable;
     static mutex_t mtxUsandoW25q16;
-    static modbusSlave *mbSlave;
-    void graba(void);
+    registrosModbus *padreRegistros;
 public:
-    holdingRegister(uint8_t pos, const char *nombre, bool grabable);
+    holdingRegister(uint8_t pos, const char *nombre, bool grabable, registrosModbus *padreRegs);
     uint8_t getPosicion(void);
     uint16_t getValorInterno(void);
     uint16_t getValorInternoDefecto(void);
@@ -57,7 +61,7 @@ private:
     uint16_t numOpciones;
     const uint32_t *valInt2Ext;
 public:
-    holdingRegisterInt2Ext(uint8_t pos, const char *nombre, const uint32_t int2ext[], uint16_t numOpciones, uint32_t opcExternoDefault, bool grabable);
+    holdingRegisterInt2Ext(uint8_t pos, const char *nombre, const uint32_t int2ext[], uint16_t numOpciones, uint32_t opcExternoDefault, bool grabable, registrosModbus *padreRegs);
     uint16_t getValorDefecto(void);
     uint32_t getValor(void);
     uint32_t getValor(uint16_t pos);
@@ -68,6 +72,8 @@ public:
 };
 
 
+
+
 class holdingRegisterOpciones: public holdingRegister
 {
 private:
@@ -75,9 +81,9 @@ private:
     uint16_t numOpciones;
     const char *descValInt[10];
 public:
-    holdingRegisterOpciones(uint8_t pos, const char *nombre,const char *opcionesStr[3], uint16_t numOpciones, uint16_t opcDefault, bool grabable);
+    holdingRegisterOpciones(uint8_t pos, const char *nombre,const char *opcionesStr[3], uint16_t numOpciones, uint16_t opcDefault, bool grabable, registrosModbus *padreRegs);
     holdingRegisterOpciones(uint8_t pos, const char *nombre,const char *opcionesStr[3], uint16_t numOpciones, uint16_t opcDefault,
-                            bool grabable, functionCheckPtr funcionHayError);
+                            bool grabable, functionCheckPtr funcionHayError, registrosModbus *padreRegs);
     uint16_t getValor(void);
     bool valorNuevoEsOk(uint16_t nuevoValor);
     uint8_t setValor(uint16_t);
@@ -95,9 +101,9 @@ private:
     float valMax;
     float escala;
 public:
-    holdingRegisterFloat(uint8_t pos, const char *nombre, float valMinPar, float valMaxPar, float opcDefecto, float escala, bool grabable);
+    holdingRegisterFloat(uint8_t pos, const char *nombre, float valMinPar, float valMaxPar, float opcDefecto, float escala, bool grabable, registrosModbus *padreRegs);
     holdingRegisterFloat(uint8_t pos, const char *nombre, float valMinPar, float valMaxPar, float opcDefecto,
-                                               float escalaPar, bool grabablePar, functionCheckPtr funcionHayError);
+                                               float escalaPar, bool grabablePar, functionCheckPtr funcionHayError, registrosModbus *padreRegs);
     float getValorDefecto(void);
     float getValorMax(void);
     float getValorMin(void);
@@ -114,9 +120,9 @@ private:
     uint16_t valMin;
     uint16_t valMax;
 public:
-    holdingRegisterInt(uint8_t pos, const char *nombre, uint16_t opcMin, uint16_t opcMax, uint16_t opcDefault, bool grabable);
+    holdingRegisterInt(uint8_t pos, const char *nombre, uint16_t opcMin, uint16_t opcMax, uint16_t opcDefault, bool grabable, registrosModbus *padreRegs);
     holdingRegisterInt(uint8_t pos, const char *nombre, uint16_t opcMin, uint16_t opcMax, uint16_t opcDefault,
-                       bool grabable, functionCheckPtr funcionHayError);
+                       bool grabable, functionCheckPtr funcionHayError, registrosModbus *padreRegs);
     uint16_t getValorDefecto(void);
     uint16_t getValorMax(void);
     uint16_t getValorMin(void);
@@ -133,7 +139,7 @@ private:
     float valMin;
     float valMax;
 public:
-    holdingRegisterEscala(uint8_t pos, const char *nombre, float opcMin, float opcMax, float opcDefault, bool grabable);
+    holdingRegisterEscala(uint8_t pos, const char *nombre, float opcMin, float opcMax, float opcDefault, bool grabable, registrosModbus *padreRegHR);
     float getValorDefecto(void);
     float getValorMax(void);
     float getValorMin(void);
@@ -153,6 +159,40 @@ public:
     char *getNombre(void);
     void setValor(uint16_t valor); // devuelve codigo de error
 };
+
+class registrosModbus
+{
+protected:
+    mutex_t mtxUsandoW25q16;
+    holdingRegister *listHoldingRegister[MAXHOLDINGREGISTERS];
+    uint8_t numHoldingRegistros;
+    inputRegister *listInputRegister[MAXINPUTREGISTERS];
+    uint8_t numInputRegistros;
+public:
+    registrosModbus(void);
+    holdingRegisterOpciones *addHoldingRegisterOpciones(const char *nombrePar,const char *opcionesStr[],  uint16_t numOpcionesPar,
+                                                        uint16_t opcDefault , bool grabablePar, registrosModbus *padreRegHR);
+    holdingRegisterOpciones *addHoldingRegisterOpciones(const char *nombrePar,const char *opcionesStr[],  uint16_t numOpcionesPar,
+                                                        uint16_t opcDefault , bool grabablePar, functionCheckPtr funcionHayError, registrosModbus *padreRegHR);
+    holdingRegisterInt2Ext *addHoldingRegisterInt2Ext(const char *nombrePar, const uint32_t int2ext[],
+                                                       uint16_t numOpciones, uint32_t opcExternoDefault, bool grabablePar, registrosModbus *padreRegHR);
+    holdingRegisterInt *addHoldingRegisterInt(const char *nombrePar, uint16_t opcMin, uint16_t opcMax, uint16_t opcDefault, bool grabablePar, registrosModbus *padreRegHR);
+    holdingRegisterInt *addHoldingRegisterInt(const char *nombrePar, uint16_t opcMin, uint16_t opcMax, uint16_t opcDefault, bool grabablePar, functionCheckPtr funcionHayError, registrosModbus *padreRegHR);
+    holdingRegisterFloat *addHoldingRegisterFloat(const char *nombrePar, float valMinPar, float valMaxPar, float opcDefecto, float escalaPar, bool grabablePar, registrosModbus *padreRegHR);
+    holdingRegisterFloat *addHoldingRegisterFloat(const char *nombrePar, float valMinPar, float valMaxPar, float opcDefecto, float escalaPar, bool grabablePar, functionCheckPtr funcionHayError, registrosModbus *padreRegHR);
+    inputRegister *addInputRegister(const char *nombrePar);
+    uint8_t setHR(uint16_t numHR, uint16_t valor);
+    uint8_t getHR(uint16_t numHR, uint32_t *valor);
+    uint8_t getHRInterno(uint16_t numHR, uint16_t *valor);
+    uint8_t escribeHR(bool usaValorDefecto);
+    uint8_t grabaHR(holdingRegister *holdReg);
+    uint8_t leeHR(void);
+    holdingRegister *getHoldingRegister(uint8_t numHR);
+    uint8_t getNumHR(void);
+    inputRegister *getInputRegister(uint8_t numIR);
+    uint8_t getNumIR(void);
+};
+
 
 void error(void);
 

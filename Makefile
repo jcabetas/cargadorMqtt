@@ -139,9 +139,9 @@ CPPSRC = $(ALLCPPSRC) \
          calendar/rtcV2UTC.cpp calendar/calendarUTC.cpp \
          colas/colas.cpp colas/colasMensajesRx.cpp colas/colasMensajesTx.cpp colas/colasMensajesLcd.cpp \
          modbuslib/crc.cpp modbuslib/holdingRegisters.cpp modbuslib/inputRegisters.cpp \
-         modbus/slaveMB.cpp \
-         modbuslib/modbus.cpp modbuslib/modbusMaestro.cpp modbuslib/modbusSlave.cpp \
-         dispositivos/dispositivos.cpp dispositivos/sdm120ct.cpp dispositivos/medida.cpp  \
+         modbus/masterMB.cpp modbus/registrosMB.cpp \
+         modbuslib/modbus.cpp modbuslib/modbusMaestro.cpp modbus/modbusRegistros.cpp \
+         dispositivos/dispositivos.cpp dispositivos/sdm120ct.cpp dispositivos/sdm630ct.cpp dispositivos/medida.cpp  \
          cargador/tests.cpp cargador/oscilador.cpp cargador/adc.cpp cargador/cargador.cpp cargador/controlCarga.cpp
          
          

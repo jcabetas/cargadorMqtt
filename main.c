@@ -21,7 +21,8 @@
 
 void initColas(void);
 void initDisplay(void);
-int8_t initModbusSlave(void);
+void initRegistrosMB(void);
+int8_t initModbusMaster(void);
 void initCargador(void);
 void initSerial(void);
 
@@ -37,7 +38,8 @@ int main(void) {
   chEvtObjectInit(&enviarCoche_source);
   initColas();
   initDisplay();
-  initModbusSlave();
+  initRegistrosMB();
+  initModbusMaster();
   initCargador();
   initSerial();
   while (1==1) {

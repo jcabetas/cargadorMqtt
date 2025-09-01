@@ -11,6 +11,8 @@
 #include "registros.h"
 #include "dispositivos.h"
 
+
+
 class modbus
 {
 protected:
@@ -20,37 +22,10 @@ protected:
     thread_t *procesoModbus;
     uint16_t usIntermsg;      // us entre mensajes
     uint16_t usMaxChar;       // us maximo de un byte
-    mutex_t mtxUsandoW25q16;
-    holdingRegister *listHoldingRegister[MAXHOLDINGREGISTERS];
-    uint8_t numHoldingRegistros;
-    inputRegister *listInputRegister[MAXINPUTREGISTERS];
-    uint8_t numInputRegistros;
 public:
     modbus(void);
     ~modbus();
     uint32_t diBaudios(void);
-    holdingRegisterOpciones *addHoldingRegisterOpciones(const char *nombrePar,const char *opcionesStr[],  uint16_t numOpcionesPar,
-                                                        uint16_t opcDefault , bool grabablePar);
-    holdingRegisterOpciones *addHoldingRegisterOpciones(const char *nombrePar,const char *opcionesStr[],  uint16_t numOpcionesPar,
-                                                        uint16_t opcDefault , bool grabablePar, functionCheckPtr funcionHayError);
-    holdingRegisterInt2Ext *addHoldingRegisterInt2Ext(const char *nombrePar, const uint32_t int2ext[],
-                                                       uint16_t numOpciones, uint32_t opcExternoDefault, bool grabablePar);
-    holdingRegisterInt *addHoldingRegisterInt(const char *nombrePar, uint16_t opcMin, uint16_t opcMax, uint16_t opcDefault, bool grabablePar);
-    holdingRegisterInt *addHoldingRegisterInt(const char *nombrePar, uint16_t opcMin, uint16_t opcMax, uint16_t opcDefault, bool grabablePar, functionCheckPtr funcionHayError);
-    holdingRegisterFloat *addHoldingRegisterFloat(const char *nombrePar, float valMinPar, float valMaxPar, float opcDefecto, float escalaPar, bool grabablePar);
-    holdingRegisterFloat *addHoldingRegisterFloat(const char *nombrePar, float valMinPar, float valMaxPar, float opcDefecto, float escalaPar, bool grabablePar, functionCheckPtr funcionHayError);
-
-    inputRegister *addInputRegister(const char *nombrePar);
-    uint8_t setHR(uint16_t numHR, uint16_t valor);
-    uint8_t getHR(uint16_t numHR, uint32_t *valor);
-    uint8_t getHRInterno(uint16_t numHR, uint16_t *valor);
-    uint8_t escribeHR(bool usaValorDefecto);
-    uint8_t grabaHR(holdingRegister *holdReg);
-    uint8_t leeHR(void);
-    holdingRegister *getHoldingRegister(uint8_t numHR);
-    uint8_t getNumHR(void);
-    inputRegister *getInputRegister(uint8_t numIR);
-    uint8_t getNumIR(void);
 
     void esperaSilencioModbus(void);
     int16_t envioStrModbus(uint8_t *str, uint16_t lenStr, sysinterval_t timeout);
@@ -70,7 +45,8 @@ public:
 class modbusSlave: public modbus
 {
 public:
-    modbusSlave(SerialDriver *SDpar, ioline_t rxtxLinePar);
+    registrosModbus *registrosMB;
+    modbusSlave(SerialDriver *SDpar, ioline_t rxtxLinePar,registrosModbus *registrosMBPar);
     ~modbusSlave();
 
     bool interpretoFunction03(uint8_t myId, uint8_t *buffer, uint16_t bytesReceived);
@@ -91,7 +67,8 @@ protected:
     float tMedio[MAXDISPOSITIVOS];
     uint16_t numDispositivosMB;
 public:
-    modbusMaster(SerialDriver *SDpar, ioline_t rxtxLinePar);
+    registrosModbus *registrosMB;
+    modbusMaster(SerialDriver *SDpar, ioline_t rxtxLinePar, registrosModbus *registrosMBPar);
     ~modbusMaster();
     void enviaMBfunc(uint8_t func, uint8_t dirMB, uint16_t addressReg, uint8_t numRegs, uint8_t bufferRx[], \
                                uint16_t sizeofbufferRx, uint16_t msDelayMax, uint16_t *msDelay, uint8_t *error);

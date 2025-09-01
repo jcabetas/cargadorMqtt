@@ -19,10 +19,11 @@ using namespace chibios_rt;
 
 
 
-modbusMaster::modbusMaster(SerialDriver *SDpar, ioline_t rxtxLinePar)
+modbusMaster::modbusMaster(SerialDriver *SDpar, ioline_t rxtxLinePar, registrosModbus *registrosMBPar)
 {
     SD = SDpar;
     rxtxLine = rxtxLinePar;
+    registrosMB = registrosMBPar;
     /*
      *     dispositivo *listDispositivosMB[MAXDISPOSITIVOS];
     uint8_t  errorEnDispMB[MAXDISPOSITIVOS];

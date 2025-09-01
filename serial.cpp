@@ -65,6 +65,14 @@ static THD_FUNCTION(ThreadXiao, arg) {
                 if (error) {
                     continue;
                 }
+                // tengo que enviar estado ("orden\":\"diestado\") ?
+                if (doc["orden"] && !strcmp("diestado",doc["orden"]))
+                {
+                    chprintf((BaseSequentialStream *)&SD1,"{\"orden\":\"estado\",\"numfases\":\"%d\""
+                             ",\"imin\":\"%.1f\",\"imax\":\"%.1f\",\"numcontactores\":\"d\"}\n",
+                             numFasesHR->getValor(), iMinHR->getValor(), iMaxHR->getValor(), numContactoresHR->getValor());
+                }
+
                 const char* isp = doc["isp"];
                 if (isp)
                 {
@@ -72,6 +80,28 @@ static THD_FUNCTION(ThreadXiao, arg) {
                     float Isp = atof(isp);
                     iSetPointModbusHR->setValor(Isp);
                 }
+                const char* medBaud = doc["medBaud"];
+                if (medBaud)
+                {
+                    chprintf((BaseSequentialStream *)&SD1,"{\"medBaudios\":\"%s\"}\n",medBaud);
+                    uint32_t baudios = atoi(medBaud);
+                    medBaudHR->setValor(baudios);
+                }
+                const char* medId = doc["medId"];
+                if (medId)
+                {
+                    chprintf((BaseSequentialStream *)&SD1,"{\"medId\":\"%s\"}\n",medId);
+                    uint8_t id = atoi(medId);
+                    medIdHR->setValor(id);
+                }
+                const char* medModelo = doc["medModelo"];
+                if (medModelo)
+                {
+                    chprintf((BaseSequentialStream *)&SD1,"{\"medModelo\":\"%s\"}\n",medModelo);
+                    uint8_t modMed = atoi(medModelo);
+                    medModeloHR->setValor(modMed);
+                }
+
             }
         }
         if (evt & EVENT_MASK(1)) // Me han pedido que envie estado de coche
@@ -94,9 +124,12 @@ void initSerial(void)
 {
     initSD1();
     // envio valores iniciales
-    chprintf((BaseSequentialStream *)&SD1,"{\"coche\":\"%s\"}\n",cocheStr[conexCocheIR->getValor()]);
-    float Isp = iSetPointModbusHR->getValor();
-    chprintf((BaseSequentialStream *)&SD1,"{\"isp\":\"%.1f\"}\n",Isp);
+//    chprintf((BaseSequentialStream *)&SD1,"{\"orden\":\"estado\",\"numfases\":\"%d\""
+//             ",\"imin\":\"%.1f\",\"imax\":\"%.1f\",\"numcontactores\":\"d\"}\n",
+//             numFasesHR->getValor(), iMinHR->getValor(), iMaxHR->getValor(), numContactoresHR->getValor());
+//    chprintf((BaseSequentialStream *)&SD1,"{\"coche\":\"%s\"}\n",cocheStr[conexCocheIR->getValor()]);
+//    float Isp = iSetPointModbusHR->getValor();
+//    chprintf((BaseSequentialStream *)&SD1,"{\"isp\":\"%.1f\"}\n",Isp);
     if (thrXiao==NULL)
         thrXiao = chThdCreateStatic(waThreadXiao, sizeof(waThreadXiao), NORMALPRIO, ThreadXiao, NULL);
 }

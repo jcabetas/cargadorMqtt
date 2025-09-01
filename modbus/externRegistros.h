@@ -8,12 +8,13 @@
 #ifndef MODBUS_EXTERNREGISTROS_H_
 #define MODBUS_EXTERNREGISTROS_H_
 
-extern holdingRegisterInt *ordenIdHR;         // Id modbus ordenador
-extern holdingRegisterInt2Ext *ordenBaudHR;       // baudios ordenador
+extern holdingRegisterInt *medIdHR;         // Id modbus ordenador
+extern holdingRegisterInt2Ext *medBaudHR;       // baudios ordenador
+extern holdingRegisterOpciones *medModeloHR;       // modelo medidor
 extern holdingRegisterInt *numFasesHR;        // #fases
 extern holdingRegisterFloat *iMaxHR;            // I max (A) *100
 extern holdingRegisterFloat *iMinHR;            // mA cuando no hay potencia (si es 0 abre contactor)
-extern holdingRegisterInt *numContactoresHR;  // numero de contactores
+extern holdingRegisterInt *numContactoresHR;    // numero de contactores
 extern holdingRegisterOpciones *controlContactHR;  // control de contactores (1 solo monofasico, 2: gestiona mono-tri, 3: trifasico)
 extern holdingRegisterFloat *iSetPointModbusHR;       // iSetpoint x100
 

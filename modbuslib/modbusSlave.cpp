@@ -40,10 +40,11 @@ void vuelcaLCD(uint8_t lineaIni, const char *msg, uint8_t *buff, uint16_t numByt
 }
 
 
-modbusSlave::modbusSlave(SerialDriver *SDpar, ioline_t rxtxLinePar)
+modbusSlave::modbusSlave(SerialDriver *SDpar, ioline_t rxtxLinePar, registrosModbus *registrosMBPar)
 {
     SD = SDpar;
     rxtxLine = rxtxLinePar;
+    registrosMB = registrosMBPar;
 }
 
 
@@ -65,7 +66,7 @@ bool modbusSlave::interpretoFunction03(uint8_t myId, uint8_t *buffer, uint16_t b
     uint16_t startAddress = (buffer[2]<<8) + buffer[3];
     uint16_t numbOfPoints = (buffer[4]<<8) + buffer[5];
     uint16_t endAddress = startAddress + numbOfPoints - 1;
-    if (endAddress >= numHoldingRegistros)
+    if (endAddress >= registrosMB->numHoldingRegistros)
         return errorMB(myId, buffer, 2);
     // prepara respuesta
     buffTx[0] = myId;
