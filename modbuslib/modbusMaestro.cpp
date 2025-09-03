@@ -189,6 +189,7 @@ uint8_t modbusMaster::lee(uint8_t numDispositivo, uint16_t msDelay)
         return 2;
     disp->addms(msDelay);
     disp->usaBus();
+    chThdSleepMilliseconds(5000);
     return 0;
 }
 

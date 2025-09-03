@@ -53,7 +53,8 @@ medida *Ic;
 medida *Ptot;
 medida *kWhActual;
 medida *kWhIniCarga;
-
+char bufferMedidas[500];
+extern event_source_t enviarMedidas_source;
 
 
 
@@ -180,19 +181,38 @@ static THD_WORKING_AREA(wamodbus, 3000);
 static THD_FUNCTION(modbusMasterThrd, arg) {
     (void)arg;
     uint16_t msDelay = 999; // para que se actualicen todas las medidas
+    uint8_t error;
     chRegSetThreadName("modbus");
     while (true) {
         //    if (medModeloHR->getValor() == 1)  // sdm120ct
         systime_t start = chVTGetSystemTime();
+        error = 1;
         if (medModeloHR->getValor() == 1)  // sdm120ct
-            medidorMB->lee(0, msDelay);
+        {
+            error = medidorMB->lee(0, msDelay);
+            if (!error && bufferMedidas[0]==0)
+            {
+                snprintf(bufferMedidas,sizeof(bufferMedidas),"{\"p\":\"%.1f\",\"ia\":\"%.2f\",\"kwh\":\"%.2f\",\"kwhini\":\"%.2f\"}",
+                                     Ptot->getValor(), Ia->getValor(),kWhActual->getValor(), kWhIniCarga->getValor());
+                chEvtBroadcast(&enviarMedidas_source);
+            }
+        }
         else if (medModeloHR->getValor() == 2)  // sdm630ct
-            medidorMB->lee(1, msDelay);
+        {
+            error = medidorMB->lee(1, msDelay);
+            if (!error && bufferMedidas[0]==0)
+            {
+                snprintf(bufferMedidas,sizeof(bufferMedidas),"{\"p\":\"%.1f\",\"ia\":\"%.2f\",\"ib\":\"%.2f\","
+                                                              "\"ic\":\"%.2f\",\"kwh\":\"%.2f\",\"kwhini\":\"%.2f\"}",
+                           Ptot->getValor(), Ia->getValor(),Ic->getValor(),Ib->getValor(),kWhActual->getValor(), kWhIniCarga->getValor());
+                chEvtBroadcast(&enviarMedidas_source);
+            }
+        }
         if (chThdShouldTerminateX())
         {
             chThdExit((msg_t) 1);
         }
-        chThdSleepMilliseconds(100);
+        chThdSleepMilliseconds(2000);
         sysinterval_t duracion = chVTTimeElapsedSinceX(start);
         msDelay = chTimeI2MS(duracion);
     }

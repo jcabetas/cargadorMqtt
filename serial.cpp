@@ -29,6 +29,8 @@ extern char *cocheStr[5];// = {"desconocido", "sin coche", "conectado","pide","p
 static const SerialConfig ser_cfg115200 = {115200, 0, 0, 0, };
 thread_t *thrXiao = NULL;
 event_source_t enviarCoche_source;
+event_source_t enviarMedidas_source;
+extern char bufferMedidas[500];
 
 static THD_WORKING_AREA(waThreadXiao, 2048);
 static THD_FUNCTION(ThreadXiao, arg) {
@@ -37,11 +39,12 @@ static THD_FUNCTION(ThreadXiao, arg) {
     uint8_t huboTimeout;
     eventmask_t evt;
     eventflags_t flags;
-    event_listener_t reciboDeXiaou_lis, enviarCoche_lis;
+    event_listener_t reciboDeXiaou_lis, enviarCoche_lis, enviarMed_lis;
     uint8_t buffer[50];
     StaticJsonDocument<100> doc;
     chEvtRegisterMaskWithFlags(chnGetEventSource(&SD1),&reciboDeXiaou_lis, EVENT_MASK (0),CHN_INPUT_AVAILABLE);
     chEvtRegisterMask(&enviarCoche_source, &enviarCoche_lis, EVENT_MASK(1));
+    chEvtRegisterMask(&enviarMedidas_source, &enviarMed_lis, EVENT_MASK(2));
     while (true)
     {
         evt = chEvtWaitAnyTimeout(ALL_EVENTS, TIME_MS2I(10000));
@@ -69,7 +72,7 @@ static THD_FUNCTION(ThreadXiao, arg) {
                 if (doc["orden"] && !strcmp("diestado",doc["orden"]))
                 {
                     chprintf((BaseSequentialStream *)&SD1,"{\"orden\":\"estado\",\"numfases\":\"%d\""
-                             ",\"imin\":\"%.1f\",\"imax\":\"%.1f\",\"numcontactores\":\"d\"}\n",
+                             ",\"imin\":\"%.1f\",\"imax\":\"%.1f\",\"numcontactores\":\"%d\"}\n",
                              numFasesHR->getValor(), iMinHR->getValor(), iMaxHR->getValor(), numContactoresHR->getValor());
                 }
 
@@ -107,6 +110,11 @@ static THD_FUNCTION(ThreadXiao, arg) {
         if (evt & EVENT_MASK(1)) // Me han pedido que envie estado de coche
         {
             chprintf((BaseSequentialStream *)&SD1,"{\"coche\":\"%s\"}\n",cocheStr[conexCocheIR->getValor()]);
+        }
+        if (evt & EVENT_MASK(2)) // Me han pedido que envie medidas
+        {
+            chprintf((BaseSequentialStream *)&SD1,"%s\n",bufferMedidas);
+            bufferMedidas[0] = (char) 0;
         }
     }
 }

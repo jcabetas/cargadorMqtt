@@ -27,6 +27,7 @@ void initCargador(void);
 void initSerial(void);
 
 extern event_source_t enviarCoche_source;
+extern event_source_t enviarMedidas_source;
 
 /*
  * Cargador STM32 modbus
@@ -36,6 +37,7 @@ int main(void) {
   halInit();
   chSysInit();
   chEvtObjectInit(&enviarCoche_source);
+  chEvtObjectInit(&enviarMedidas_source);
   initColas();
   initDisplay();
   initRegistrosMB();
