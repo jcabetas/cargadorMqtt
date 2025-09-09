@@ -14,7 +14,8 @@
     json tipo "{"orden":"conecta","numfases":"3"}
     Si cambia el numero de fases por configuración recibida, le puede volver a enviar petición de reenganche  
     Cuando esté configurado, Xiao enviará a STM32 "{"orden":"estado","conectado":"1", "numfases":"3"}
-  - En cualquier momento STM32 puede preguntar estado a Xiao con json "{"orden":"estado"}  
+  - En cualquier momento STM32 puede preguntar estado a Xiao con json "{"orden":"diestado"} . STM32 contestara con 
+    "{"orden":"estado", "numfases":"1·,...}
   - Ajuste, puede ser por:
     * Isp (enviando al topic "Kona/isp/set" un json {"isp":"13.2"}
     * Psp (idem con "psp")

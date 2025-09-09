@@ -53,6 +53,8 @@ medida *Ic;
 medida *Ptot;
 medida *kWhActual;
 medida *kWhIniCarga;
+uint8_t numFasesReal = 0;
+bool hayPot = true;
 char bufferMedidas[500];
 extern event_source_t enviarMedidas_source;
 
@@ -60,7 +62,6 @@ extern event_source_t enviarMedidas_source;
 
 void actualizaIa(float valorPar, bool esValidoPar)
 {
-    char bufferLCD[25];
 
 #ifdef MODODEBUG
     float nuevoValor;
@@ -88,16 +89,15 @@ void actualizaIa(float valorPar, bool esValidoPar)
     }
 #endif
     medValidasIR->setValor(esValidoPar);
-    if (esValidoPar)
-        snprintf(bufferLCD,sizeof(bufferLCD),"I:%4.1f P:%5d",0.01f*IarealIR->getValor(), PrealIR->getValor());
-    else
-        snprintf(bufferLCD,sizeof(bufferLCD),"I:??   P: ??   ");
-    ponEnColaLCD(1,bufferLCD);
+//    if (esValidoPar)
+//        snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
+//    else
+//        snprintf(bufferLCD,sizeof(bufferLCD),"Sin medidas");
+//    ponEnColaLCD(1,bufferLCD);
 }
 
 void actualizaIaTrifasico(float valorPar, bool esValidoPar)
 {
-    char bufferLCD[25];
 
 #ifdef MODODEBUG
     float nuevoValor;
@@ -120,17 +120,16 @@ void actualizaIaTrifasico(float valorPar, bool esValidoPar)
     IarealIR->setValor(100*valorPar);
 #endif
     medValidasIR->setValor(esValidoPar);
-    if (esValidoPar)
-        snprintf(bufferLCD,sizeof(bufferLCD),"Ia:%4.1f P:%5d",0.01f*IarealIR->getValor(), PrealIR->getValor());
-    else
-        snprintf(bufferLCD,sizeof(bufferLCD),"I:??   P: ??   ");
-    ponEnColaLCD(1,bufferLCD);
+//    if (esValidoPar)
+//        snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
+//    else
+//        snprintf(bufferLCD,sizeof(bufferLCD),"Sin medidas");
+//    ponEnColaLCD(1,bufferLCD);
 }
 
 
-void actualizaPtot(float valor, bool esValido)
+void actualizaPtot(float valor, bool esValidoPar)
 {
-    char bufferLCD[25];
 #ifdef MODODEBUG
     if (contactor1IR->getValor()==1)
     {
@@ -148,19 +147,18 @@ void actualizaPtot(float valor, bool esValido)
     PrealIR->setValor(valor);
 #else
     PrealIR->setValor(valor);
-    medValidasIR->setValor(esValido);
+    medValidasIR->setValor(esValidoPar);
 #endif
-    medValidasIR->setValor(esValido);
-    if (esValido)
-        snprintf(bufferLCD,sizeof(bufferLCD),"I:%4.1f P:%5d",0.01f*IarealIR->getValor(), PrealIR->getValor());
-    else
-        snprintf(bufferLCD,sizeof(bufferLCD),"I:??   P: ??   ");
-    ponEnColaLCD(1,bufferLCD);
+    medValidasIR->setValor(esValidoPar);
+//    if (esValidoPar)
+//        snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
+//    else
+//        snprintf(bufferLCD,sizeof(bufferLCD),"Sin medidas");
+//    ponEnColaLCD(1,bufferLCD);
 }
 
 void actualizakWh(float valor, bool esValido)
 {
-    char bufferLCD[25];
 #ifdef MODODEBUG
     valor += incEner;
 #endif
@@ -171,8 +169,11 @@ void actualizakWh(float valor, bool esValido)
         kWhIniCarga->setValor(valor);
     kWhCargadosIR->setValor(valorInt - 100.0f*kWhIniCarga->getValor());
     medValidasIR->setValor(esValido);
-    snprintf(bufferLCD,sizeof(bufferLCD),"kWh: %.3f    ",valor);
-    ponEnColaLCD(2,bufferLCD);
+//    if (esValido)
+//        snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
+//    else
+//        snprintf(bufferLCD,sizeof(bufferLCD),"Sin medidas");
+//    ponEnColaLCD(1,bufferLCD);
 }
 
 
@@ -182,6 +183,7 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
     (void)arg;
     uint16_t msDelay = 999; // para que se actualicen todas las medidas
     uint8_t error;
+    char bufferLCD[25];
     chRegSetThreadName("modbus");
     while (true) {
         //    if (medModeloHR->getValor() == 1)  // sdm120ct
@@ -190,29 +192,46 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
         if (medModeloHR->getValor() == 1)  // sdm120ct
         {
             error = medidorMB->lee(0, msDelay);
+            if (kWhIniCarga->getValor()<0.001f)
+                kWhIniCarga->setValor(kWhActual->getValor());
             if (!error && bufferMedidas[0]==0)
             {
-                snprintf(bufferMedidas,sizeof(bufferMedidas),"{\"p\":\"%.1f\",\"ia\":\"%.2f\",\"kwh\":\"%.2f\",\"kwhini\":\"%.2f\"}",
-                                     Ptot->getValor(), Ia->getValor(),kWhActual->getValor(), kWhIniCarga->getValor());
+                snprintf(bufferMedidas,sizeof(bufferMedidas),"{\"orden\":\"medidas\",\"p\":\"%.1f\",\"ia\":\"%.2f\",\"kwh\":\"%.2f\",\"kwhcarga\":\"%.2f\"}",
+                                     Ptot->getValor(), Ia->getValor(),kWhActual->getValor(), kWhActual->getValor()-kWhIniCarga->getValor());
                 chEvtBroadcast(&enviarMedidas_source);
             }
         }
         else if (medModeloHR->getValor() == 2)  // sdm630ct
         {
             error = medidorMB->lee(1, msDelay);
+            if (kWhIniCarga->getValor()<0.001f)
+                kWhIniCarga->setValor(kWhActual->getValor());
             if (!error && bufferMedidas[0]==0)
             {
-                snprintf(bufferMedidas,sizeof(bufferMedidas),"{\"p\":\"%.1f\",\"ia\":\"%.2f\",\"ib\":\"%.2f\","
-                                                              "\"ic\":\"%.2f\",\"kwh\":\"%.2f\",\"kwhini\":\"%.2f\"}",
-                           Ptot->getValor(), Ia->getValor(),Ic->getValor(),Ib->getValor(),kWhActual->getValor(), kWhIniCarga->getValor());
+                numFasesReal = 0;
+                if (Ia->getValor()>6.0f)
+                    numFasesReal++;
+                if (Ib->getValor()>6.0f)
+                    numFasesReal++;
+                if (Ic->getValor()>6.0f)
+                    numFasesReal++;
+                cargKona->setNumFasesReal(numFasesReal);
+                snprintf(bufferMedidas,sizeof(bufferMedidas),"{\"orden\":\"medidas\",\"p\":\"%.1f\",\"ia\":\"%.2f\",\"ib\":\"%.2f\","
+                                                              "\"ic\":\"%.2f\",\"kwh\":\"%.2f\",\"kwhcarga\":\"%.2f\",\"numfasesreal\":\"%d\"}",
+                           Ptot->getValor(), Ia->getValor(),Ic->getValor(),Ib->getValor(),kWhActual->getValor(), kWhActual->getValor()-kWhIniCarga->getValor(),numFasesReal);
                 chEvtBroadcast(&enviarMedidas_source);
             }
         }
+        if (!error)
+            snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
+        else
+            snprintf(bufferLCD,sizeof(bufferLCD),"Sin medidas");
+        ponEnColaLCD(1,bufferLCD);
         if (chThdShouldTerminateX())
         {
             chThdExit((msg_t) 1);
         }
-        chThdSleepMilliseconds(2000);
+        chThdSleepMilliseconds(5000);
         sysinterval_t duracion = chVTTimeElapsedSinceX(start);
         msDelay = chTimeI2MS(duracion);
     }

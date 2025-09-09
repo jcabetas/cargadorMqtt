@@ -17,6 +17,7 @@ extern holdingRegisterFloat *iMinHR;            // mA cuando no hay potencia (si
 extern holdingRegisterInt *numContactoresHR;    // numero de contactores
 extern holdingRegisterOpciones *controlContactHR;  // control de contactores (1 solo monofasico, 2: gestiona mono-tri, 3: trifasico)
 extern holdingRegisterFloat *iSetPointModbusHR;       // iSetpoint x100
+extern holdingRegisterFloat *pSetPointModbusHR;       // pSetpoint
 
 
 extern inputRegister *conexCocheIR; // 0: desconocido, 1: no hay coche, 2: conectado: 3: pidiendo, 4: ventilacion

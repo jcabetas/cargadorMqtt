@@ -86,7 +86,8 @@ public:
                             bool grabable, functionCheckPtr funcionHayError, registrosModbus *padreRegs);
     uint16_t getValor(void);
     bool valorNuevoEsOk(uint16_t nuevoValor);
-    uint8_t setValor(uint16_t);
+    uint8_t setValor(uint16_t nuevoValor);
+    uint8_t setValor(const char *valorStr);
     const char *getDescripcion(void);
     const char *getDescripcion(uint16_t valor);
     uint16_t getNumOpciones(void);

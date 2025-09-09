@@ -198,6 +198,19 @@ uint8_t holdingRegisterOpciones::setValor(uint16_t valor)
     return 0;
 }
 
+
+uint8_t holdingRegisterOpciones::setValor(const char *valorStr)
+{
+    for (int8_t i=0;i<numOpciones;i++)
+        if (!strcmp(descValInt[i], valorStr))
+        {
+            setValorInterno(i);
+            return 0;
+        }
+    return 1;
+}
+
+
 const char *holdingRegisterOpciones::getDescripcion(void)
 {
     return descValInt[valInterno];

@@ -25,9 +25,12 @@ void initRegistrosMB(void);
 int8_t initModbusMaster(void);
 void initCargador(void);
 void initSerial(void);
+void ponConfigEnLCD(void);
 
 extern event_source_t enviarCoche_source;
 extern event_source_t enviarMedidas_source;
+extern event_source_t haCambiadoADC_source;
+extern event_source_t haCambiadoPsp_source;
 
 /*
  * Cargador STM32 modbus
@@ -38,9 +41,12 @@ int main(void) {
   chSysInit();
   chEvtObjectInit(&enviarCoche_source);
   chEvtObjectInit(&enviarMedidas_source);
+  chEvtObjectInit(&haCambiadoADC_source);
+  chEvtObjectInit(&haCambiadoPsp_source);
   initColas();
   initDisplay();
   initRegistrosMB();
+  ponConfigEnLCD();
   initModbusMaster();
   initCargador();
   initSerial();

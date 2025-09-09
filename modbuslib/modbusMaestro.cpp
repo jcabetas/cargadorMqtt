@@ -188,9 +188,8 @@ uint8_t modbusMaster::lee(uint8_t numDispositivo, uint16_t msDelay)
     if (disp==NULL)
         return 2;
     disp->addms(msDelay);
-    disp->usaBus();
-    chThdSleepMilliseconds(5000);
-    return 0;
+    uint8_t error = disp->usaBus();
+    return error;
 }
 
 // despues de leer un numero de registros, decodificamos un registro

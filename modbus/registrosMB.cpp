@@ -17,11 +17,13 @@ using namespace chibios_rt;
 #include "modbus.h"
 #include "registros.h"
 #include "lcd.h"
+#include "stdio.h"
 
 
 
 extern "C" {
     void initRegistrosMB(void);
+    void ponConfigEnLCD(void);
 }
 
 registrosModbus *registrosMB;
@@ -48,6 +50,7 @@ holdingRegisterFloat *iMinHR;          // mA cuando no hay potencia (si es 0 abr
 holdingRegisterInt *numContactoresHR;  // numero de contactores
 holdingRegisterOpciones *controlContactHR;  // control de contactores {"solo el primero","mono-tri","los dos a la vez"};
 holdingRegisterFloat *iSetPointModbusHR;     // iSetpoint x100
+holdingRegisterFloat *pSetPointModbusHR;       // pSetpoint
 
 
 bool checkIspmodbus(uint16_t nuevoValorInterno)
@@ -59,6 +62,18 @@ bool checkIspmodbus(uint16_t nuevoValorInterno)
         return true;
     return false;
 }
+
+bool checkPspmodbus(uint16_t nuevoValorInterno)
+{
+    float valor = nuevoValorInterno/pSetPointModbusHR->getEscala();
+    if (valor > 230.0f*numFasesHR->getValor()*iMaxHR->getValor())
+        return true;
+    if (valor < 230.0f*iMinHR->getValor()) // se supone que puede quedarse en una fase
+        return true;
+    return false;
+}
+
+
 
 bool checkNumContactores(uint16_t nuevoValorInterno)
 {
@@ -77,15 +92,16 @@ bool checkControlContactores(uint16_t nuevoValorInterno)
 void initHoldingRegisters(registrosModbus *modbusRegs)
 {
    // comunes
-   medIdHR = modbusRegs->addHoldingRegisterInt("med IdMB", 2, 127, 5, true, modbusRegs);
+   medIdHR = modbusRegs->addHoldingRegisterInt("med IdMB", 1, 127, 5, true, modbusRegs);
    medBaudHR = modbusRegs->addHoldingRegisterInt2Ext("med Baud",modbusSpeed,10,115200,true, modbusRegs);
    medModeloHR = modbusRegs->addHoldingRegisterOpciones("modelo medidor",medStr, 3, 0, true, modbusRegs);
    numFasesHR = modbusRegs->addHoldingRegisterInt("num Fases", 1,3,1, true, modbusRegs);
    iMaxHR = modbusRegs->addHoldingRegisterFloat("iMax",7.0f,32.0f,16.0f, 100.0f, true, modbusRegs);
    iMinHR = modbusRegs->addHoldingRegisterFloat("iMin",0.0f,7.0f, 5.0f, 100.0f, true, modbusRegs);
-   numContactoresHR = modbusRegs->addHoldingRegisterInt("num Contact.", 1,2,1, true, checkNumContactores, modbusRegs);       //  0
-   controlContactHR = modbusRegs->addHoldingRegisterOpciones("cont. Contact.", ctrlContactStr, 3,0, true, checkControlContactores, modbusRegs);       //  0
-   iSetPointModbusHR = modbusRegs->addHoldingRegisterFloat("Isp modbus", 7.0f, 32.0f, 16.0f, 100.0f, false, checkIspmodbus, modbusRegs);   //  4
+   numContactoresHR = modbusRegs->addHoldingRegisterInt("num Contact.", 1,2,1, true, checkNumContactores, modbusRegs);
+   controlContactHR = modbusRegs->addHoldingRegisterOpciones("cont. Contact.", ctrlContactStr, 3,0, true, checkControlContactores, modbusRegs);
+   iSetPointModbusHR = modbusRegs->addHoldingRegisterFloat("Isp modbus", 7.0f, 32.0f, 16.0f, 100.0f, false, checkIspmodbus, modbusRegs);
+   pSetPointModbusHR = modbusRegs->addHoldingRegisterFloat("Psp modbus", 0.0f, 11040.0f, 3600.0f, 1.0f, false, checkPspmodbus, modbusRegs);
 }
 
 
@@ -131,6 +147,24 @@ void initInputRegisters(registrosModbus *modbusRegs)
    tLastMsgRxIR->setValor(0);
 }
 
+void ponConfigEnLCD(void)
+{
+    char bufferLCD[25];
+    snprintf(bufferLCD,sizeof(bufferLCD),"Modelo med: %s", medModeloHR->getDescripcion());
+    ponEnColaLCD(0,bufferLCD);
+    snprintf(bufferLCD,sizeof(bufferLCD),"Id:%-3d    baud:%5ld", medIdHR->getValor(),medBaudHR->getValor());
+    ponEnColaLCD(1,bufferLCD);
+    snprintf(bufferLCD,sizeof(bufferLCD),"fases:%d     #reles:%d", numFasesHR->getValor(),numContactoresHR->getValor());
+    ponEnColaLCD(2,bufferLCD);
+    snprintf(bufferLCD,sizeof(bufferLCD),"iMin:%.1f   iMax:%.1f", iMinHR->getValor(),iMaxHR->getValor());
+    ponEnColaLCD(3,bufferLCD);
+    chThdSleepMilliseconds(5000);
+    ponEnColaLCD(0," ");
+    ponEnColaLCD(1," ");
+    ponEnColaLCD(2," ");
+    ponEnColaLCD(3," ");
+    chThdSleepMilliseconds(100);
+}
 
 
 /*

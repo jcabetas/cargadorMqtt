@@ -19,54 +19,90 @@ using namespace chibios_rt;
 extern cargador *cargKona;
 extern event_source_t enviarCoche_source;
 
-//typedef enum { RDESCONOCIDO=0, RDESCONECTADO, RCONECTADO, RPIDECARGA, RPIDEVENTILACION} estadoRes_t;
-const char *cocheStr[5] = {"desconocido", "sin coche", "conectado","pide","pide vent."};
 
-//extern medida *Ia;
-//extern medida *Ptot;
-//extern medida *kWhActual;
-//extern medida *kWhIniCarga;
+const char *cocheStr[5] = {"Desconoc", "Desconect", "Conectado","Pide","Pide vent"};
 
-//holdingRegisterOpciones *modoHR;       // {"manual","modbusI"};
-void  cargador::controlIntensidad(void)
+
+extern medida *kWhActual;
+extern medida *kWhIniCarga;
+extern medida *Ptot;
+extern uint8_t numFasesReal;
+extern bool hayPot;
+uint16_t dsPAlta = 0;
+systime_t startUltEstado;
+
+// en monofasica la potencia va de 1.610 a iMax*230. En trifásico de 4.830 a iMax*230
+// si la Ptot es mayor de 0.8*iMax*230 más de 30s, activamos segundo rele
+// si la Ptot<
+void  cargador::controlCarga(void)
 {
-    IsetpointIR->setValor(100*iSetPointModbusHR->getValor());
-    cargKona->fijaAmperios(iSetPointModbusHR->getValor());
-}
-
-void cargador::cambioEstado(void)
-{
-    switch (conexCocheIR->getValor())
+    estadoRes_t estadoCoche = cargKona->getEstadoRes();
+    // si no esta conectado, apaga y vamonos!
+    if (estadoCoche < RCONECTADO)
     {
-        case RDESCONOCIDO:
-        case RDESCONECTADO:
-            cargKona->ponReles();  // desconecta cargador
-            ocultaOscilador();
-            break;
-        case RCONECTADO:
-            cargKona->ponReles();  // desconecta cargador
-            sacaOscilador();
-            if (cargKona->oldStatusResis == RDESCONECTADO)
-            {
-                kWhCargadosIR->setValor(0);
-                // kWhIniCarga->setValor(kWhActual->getValor());
-                kWhIniCargaLoIR->setValor(kWhActualLoIR->getValor());
-                kWhIniCargaHiIR->setValor(kWhActualHiIR->getValor());
-            }
-            break;
-        case RPIDECARGA:
-        case RPIDEVENTILACION:
-            sacaOscilador();
-            cargKona->ponReles();  // conecta cargador
-            if (cargKona->oldStatusResis == RDESCONECTADO)
-            {
-                kWhCargadosIR->setValor(0);
-                //kWhIniCarga->setValor(kWhActual->getValor());
-                kWhIniCargaLoIR->setValor(kWhActualLoIR->getValor());
-                kWhIniCargaHiIR->setValor(kWhActualHiIR->getValor());
-            }
-            break;
+        ocultaOscilador();
+        ponReles(0, 0);
+        return;
     }
-    ponEstadoEnLCD();
-    chEvtBroadcast(&enviarCoche_source);
+    // miramos si hay potencia
+    float Isetpoint = pSetPointModbusHR->getValor()/230.0f/numFasesReal;
+    if (Isetpoint>=7.0f)
+        hayPot = true;
+    else
+        hayPot = false;
+    // actualizo hay mucha potencia
+    if (Isetpoint>13.0f)
+    {
+        if (horaHayMuchaPot==0)
+            horaHayMuchaPot = chVTGetSystemTime();
+    }
+    else
+        horaHayMuchaPot = 0;
+    // pon oscilador si hay potencia
+    if (hayPot)
+    {
+        if (osciladorOculto) // compruebo que ha pasado un tiempo desde ult. desconexion por potencia
+        {
+            sysinterval_t duracion = chVTTimeElapsedSinceX(horaDescFaltapot);
+            if (TIME_I2S(duracion) > 10)
+                sacaOscilador();
+        }
+        else
+            sacaOscilador();
+    }
+    else
+    {
+        if (!osciladorOculto)
+            horaDescFaltapot = chVTGetSystemTime();
+        ocultaOscilador();
+    }
+    // RELES
+    // si no hay chicha, no pomgas reles
+    if (!hayPot || osciladorOculto)
+    {
+        ponReles(0, 0);
+        return;
+    }
+    // configuración de intensidad
+    cargKona->fijaAmperios(Isetpoint);
+    // monofásico o solo un contactor: poner reles, si procede
+    if (numFasesReal==1 || numContactoresHR->getValor()==1)
+    {
+        ponReles(1,0);          // si hay potencia y he puesto oscilador, pongo rele
+    }
+    else
+    {
+        // hay dos contactores...
+        // si hay mucha potencia, conecta los dos contactores
+        sysinterval_t duracion = chVTTimeElapsedSinceX(horaHayMuchaPot);
+        if (TIME_I2S(duracion) > 30)
+            ponReles(1, 1);
+        else
+            ponReles(1, 0);
+    }
 }
+
+//sysinterval_t duracion = chVTTimeElapsedSinceX(start);
+//systime_t start = chVTGetSystemTime();
+
+

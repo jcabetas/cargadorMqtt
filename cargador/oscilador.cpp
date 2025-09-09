@@ -89,11 +89,6 @@ void cargador::ocultaOscilador(void)
     palSetLine(LINE_OSCILADOR);
     palSetLineMode(LINE_OSCILADOR, PAL_MODE_ALTERNATE(0));
     palSetLineMode(LINE_OSCILADOR, PAL_MODE_OUTPUT_PUSHPULL);
-//
-//  palSetPad(GPIOA, 8);
-//  palClearPad(GPIOA,7);
-//  palSetPadMode(IOPORT1,8, PAL_MODE_OUTPUT_PUSHPULL);
-//    palSetPadMode(IOPORT1,7, PAL_MODE_OUTPUT_PUSHPULL);
     osciladorOculto = 1;
 }
 
@@ -103,11 +98,7 @@ void cargador::sacaOscilador(void)
     // PA7 => TIM1_CH1N (D32 en extension-pin10)
     //PWMD1.tim->CNT = 1L;
     PWMD2.tim->CNT = PWMD2.tim->ARR;
-//  palClearPad(GPIOA, 8);
-//  palSetPad(GPIOA,7);
     palSetLineMode(LINE_OSCILADOR, PAL_MODE_ALTERNATE(1));
-//  palSetPadMode(IOPORT1,8, PAL_MODE_STM32_ALTERNATE_PUSHPULL);
-//    palSetPadMode(IOPORT1,7, PAL_MODE_STM32_ALTERNATE_PUSHPULL);
     osciladorOculto = 0;
     ondaNegOk = 1; // se actualizará mas tarde
 }
@@ -144,46 +135,12 @@ void cargador::initOscilador(void)
 //    pwmStart(&PWMD3, &pwmcfgTIM3);
     pwmStart(&PWMD2, &pwmcfgTIM2);
 
-
     pwmEnableChannel(&PWMD2, 2, 1300); // CH3 Onda para wallbox
     pwmEnableChannel(&PWMD2, 1,  300); // CH2 4% after start pulse (top side). Ojo, en parada se fija al 5%, necesita margen
     pwmEnableChannel(&PWMD2, 0, 6400); // CH1 80% after start pulse (low side) injected
-
-
-    fijaAmperios(5.0f);
-    sacaOscilador();
-    //ocultaOscilador();
-
-//    initADC();
-//    statusResisOld = RDESCONOCIDO;
 
 }
 
 
 
-//void testCargador(void)
-//{
-//    // PB12 es el rele (GPIOB_RELE, LINE_RELE)
-//    // PE9TIM1CH1 es el pin de entrada al ondulador
-//    palSetLineMode(LINE_RELE, PAL_MODE_OUTPUT_PUSHPULL);
-//    palClearLine(LINE_RELE);
-//    /*
-//      * Starting PWM driver 1 and enabling the notifications.
-//      * GPIOE9 is programmed as PWM output (channel 1 of TIM1).
-//      */
-//    palSetLineMode(LINE_OSCILADOR, PAL_MODE_ALTERNATE(1));
-//    pwmStart(&PWMD1, &pwmcfg);
-//    fijaAmperios(10.0f);
-//    pwmEnableChannel(&PWMD1, 2,  400); // CH3 5% after start pulse (top side)
-//    pwmEnableChannel(&PWMD1, 3, 6400); // CH4 80% after start pulse (low side)
-//    initADC();
-//    while (true)
-//     {
-////         PWMD1.tim->CNT = PWMD1.tim->ARR;
-//   //  para ocultar oscilador
-//   //  palSetLineMode(LINE_TIM1_CH1, PAL_MODE_ALTERNATE(0));
-//   //  palSetLineMode(LINE_TIM1_CH1, PAL_MODE_OUTPUT_PUSHPULL);
-//         chThdSleepMilliseconds(5000);
-//     };
-//
-//}
+
