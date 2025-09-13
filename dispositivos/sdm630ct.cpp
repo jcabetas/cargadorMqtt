@@ -154,10 +154,6 @@ uint8_t sdm630ct::usaBus(void)
             else
                 erroresSeguidos = 0;
             // quizas hay que multiplicar valor (p.e. Px2)
-            if (tip==3)
-                valor *= 2.0f;
-            if (tip==4)
-                valor *= 3.0f;
 //            med->setValidez(1); ya se valida al hacer el set
             ptrMed[m-1]->setValor(valor);
             msDesdeUpdate[m-1] = 0;

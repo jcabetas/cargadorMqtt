@@ -53,6 +53,7 @@ medida *Ic;
 medida *Ptot;
 medida *kWhActual;
 medida *kWhIniCarga;
+extern float Isetpoint;
 uint8_t numFasesReal = 0;
 bool hayPot = true;
 char bufferMedidas[500];
@@ -215,6 +216,8 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
                     numFasesReal++;
                 if (Ic->getValor()>6.0f)
                     numFasesReal++;
+                if (numFasesReal==0)    // si no hay medida, por ejemplo
+                    numFasesReal = 1;
                 cargKona->setNumFasesReal(numFasesReal);
                 snprintf(bufferMedidas,sizeof(bufferMedidas),"{\"orden\":\"medidas\",\"p\":\"%.1f\",\"ia\":\"%.2f\",\"ib\":\"%.2f\","
                                                               "\"ic\":\"%.2f\",\"kwh\":\"%.2f\",\"kwhcarga\":\"%.2f\",\"numfasesreal\":\"%d\"}",
@@ -227,6 +230,8 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
         else
             snprintf(bufferLCD,sizeof(bufferLCD),"Sin medidas");
         ponEnColaLCD(1,bufferLCD);
+        snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Isp:%4.1f", numFasesReal,Isetpoint);
+        ponEnColaLCD(2,bufferLCD);
         if (chThdShouldTerminateX())
         {
             chThdExit((msg_t) 1);
@@ -263,8 +268,8 @@ uint8_t initModbusMaster(void)
     med630ct = new sdm630ct(medidorMB,"medPot",medIdHR->getValor());
     med630ct->attachMedida(Ptot, "P", 1000, "Potencia");
     med630ct->attachMedida(Ia, "Ia", 1000, "Ia");
-    med630ct->attachMedida(Ia, "Ib", 1000, "Ib");
-    med630ct->attachMedida(Ia, "Ic", 1000, "Ic");
+    med630ct->attachMedida(Ib, "Ib", 1000, "Ib");
+    med630ct->attachMedida(Ic, "Ic", 1000, "Ic");
     med630ct->attachMedida(kWhActual, "kWh", 5000, "kWh");
 //    medidorMB->addDisp(med630ct); // dispositivo numero 1
 

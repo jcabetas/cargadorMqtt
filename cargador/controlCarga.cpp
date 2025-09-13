@@ -30,6 +30,7 @@ extern uint8_t numFasesReal;
 extern bool hayPot;
 uint16_t dsPAlta = 0;
 systime_t startUltEstado;
+float Isetpoint;
 
 // en monofasica la potencia va de 1.610 a iMax*230. En trifásico de 4.830 a iMax*230
 // si la Ptot es mayor de 0.8*iMax*230 más de 30s, activamos segundo rele
@@ -45,13 +46,13 @@ void  cargador::controlCarga(void)
         return;
     }
     // miramos si hay potencia
-    float Isetpoint = pSetPointModbusHR->getValor()/230.0f/numFasesReal;
-    if (Isetpoint>=7.0f)
+    Isetpoint = pSetPointModbusHR->getValor()/230.0f/numFasesReal;
+    if (Isetpoint>=6.0f)
         hayPot = true;
     else
         hayPot = false;
     // actualizo hay mucha potencia
-    if (Isetpoint>13.0f)
+    if (Isetpoint>26.0f || (Isetpoint>7.0f && numFasesReal>1))
     {
         if (horaHayMuchaPot==0)
             horaHayMuchaPot = chVTGetSystemTime();
@@ -83,10 +84,8 @@ void  cargador::controlCarga(void)
         ponReles(0, 0);
         return;
     }
-    // configuración de intensidad
-    cargKona->fijaAmperios(Isetpoint);
     // monofásico o solo un contactor: poner reles, si procede
-    if (numFasesReal==1 || numContactoresHR->getValor()==1)
+    if (numFasesHR->getValor()==1 || numContactoresHR->getValor()==1)
     {
         ponReles(1,0);          // si hay potencia y he puesto oscilador, pongo rele
     }
@@ -95,11 +94,17 @@ void  cargador::controlCarga(void)
         // hay dos contactores...
         // si hay mucha potencia, conecta los dos contactores
         sysinterval_t duracion = chVTTimeElapsedSinceX(horaHayMuchaPot);
-        if (TIME_I2S(duracion) > 30)
+        if (horaHayMuchaPot!=0 && TIME_I2S(duracion) > 30)
+        {
+            if (Isetpoint>16.0f)
+                Isetpoint = 16.0;
             ponReles(1, 1);
+        }
         else
             ponReles(1, 0);
     }
+    // configuración de intensidad
+    cargKona->fijaAmperios(Isetpoint);
 }
 
 //sysinterval_t duracion = chVTTimeElapsedSinceX(start);
