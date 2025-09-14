@@ -49,6 +49,8 @@ cargador::cargador(void)
     numFasesReal = 1;               // salvo que se demuestre lo contrario
     initADC();
     initOscilador();
+    uint16_t pspdef = pDefaultSetPointHR->getValor();
+    pSetPointModbusHR->setValor(pspdef);
     fijaAmperios(7.0f);
     ocultaOscilador();
     ponEstadoEnLCD();
@@ -80,7 +82,10 @@ void cargador::cambioEstado(void)
             if (hayPot)
             {
                 sacaOscilador();
-                cargKona->ponReles(1,0);
+                if (getEstadoRele2() == 0)
+                    cargKona->ponReles(1,0);
+                else
+                    cargKona->ponReles(1,1);
             }
             else
             {
@@ -106,6 +111,8 @@ void cargador::ponReles(uint8_t rele1, uint8_t rele2)
         palSetLine(LINE_RELE2);
     else
         palClearLine(LINE_RELE2);
+    estadoRele1 = rele1;
+    estadoRele2 = rele2;
 }
 
 
@@ -118,6 +125,27 @@ uint8_t cargador::getNumFasesReal(void)
 {
     return numFasesReal;
 }
+
+uint8_t cargador::getOsciladorOculto(void)
+{
+    return osciladorOculto;
+}
+
+uint8_t cargador::getEstadoRele1(void)
+{
+    return estadoRele1;
+}
+
+uint8_t cargador::getEstadoRele2(void)
+{
+    return estadoRele2;
+}
+
+uint8_t getEstadoRele1(void);
+uint8_t getEstadoRele2(void);
+void setReles(uint8_t rele1, uint8_t rele2);
+
+
 
 void cargador::ponEstadoEnLCD(void)
 {

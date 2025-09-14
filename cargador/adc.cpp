@@ -31,7 +31,7 @@ extern cargador *cargKona;
 
 
 // fuente roja y nuevo OPAMP
-uint16_t minSinCocheADC=250, maxSinCocheADC=689, minConectadoADC=690, maxConectadoADC=1092;
+uint16_t minSinCocheADC=150, maxSinCocheADC=689, minConectadoADC=690, maxConectadoADC=1092;
 uint16_t minPidecargaADC=1093, maxPidecargaADC=1542, \
          minPideVentilacionADC=1543, maxPideVentilacionADC=1999;
 

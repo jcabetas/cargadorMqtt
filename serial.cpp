@@ -40,6 +40,7 @@ static THD_WORKING_AREA(waThreadXiao, 2048);
 static THD_FUNCTION(ThreadXiao, arg) {
     (void)arg;
     chRegSetThreadName("xiao");
+    char bufferLCD[25];
     uint8_t huboTimeout;
     eventmask_t evt;
     eventflags_t flags;
@@ -78,11 +79,13 @@ static THD_FUNCTION(ThreadXiao, arg) {
                 {
                     uint16_t pmin = 230.0f*iMinHR->getValor();
                     uint16_t pmax = numFasesHR->getValor()*230.0f*iMaxHR->getValor();
+                    if (pmax > 11040.0f)
+                        pmax = 11040.0f;
                     chprintf((BaseSequentialStream *)&SD1,"{\"orden\":\"config\",\"numfases\":\"%d\""
                              ",\"imin\":\"%.1f\",\"imax\":\"%.1f\",\"pmin\":\"%d\",\"pmax\":\"%d\",\"numcontactores\":\"%d\""
-                             ",\"medbaud\":\"%d\",\"medid\":\"%d\"}\n",
+                             ",\"medbaud\":\"%d\",\"medid\":\"%d\",\"pspdefault\":\"%d\"}\n",
                              numFasesHR->getValor(), iMinHR->getValor(), iMaxHR->getValor(), pmin, pmax,numContactoresHR->getValor(),
-                             medBaudHR->getValor(),medIdHR->getValor());
+                             medBaudHR->getValor(),medIdHR->getValor(),pDefaultSetPointHR->getValor());
                 }
                 // tengo que enviar estado actual ("orden\":\"diestado\") ?
                 if (doc["orden"] && !strcmp("diestado",doc["orden"]))
@@ -105,19 +108,32 @@ static THD_FUNCTION(ThreadXiao, arg) {
                     cargKona->ponEstadoEnLCD();
                     chEvtBroadcast(&haCambiadoPsp_source);  // notifica el cambio de PSP
                 }
+                const char* pDefaultStr = doc["pspdefault"];
+                if (pDefaultStr)
+                {
+                    chprintf((BaseSequentialStream *)&SD1,"{\"pspdefault\":\"%s\"}\n",pDefaultStr);
+                    uint16_t pDefault = atoi(pDefaultStr);
+                    pDefaultSetPointHR->setValor(pDefault);
+                    snprintf(bufferLCD,sizeof(bufferLCD),"Psp default:%d",pDefault);
+                    ponEnColaLCD(3,bufferLCD);
+                }
                 const char* iminStr = doc["imin"];
                 if (iminStr)
                 {
                     chprintf((BaseSequentialStream *)&SD1,"{\"imin\":\"%s\"}\n",iminStr);
-                    float imin = atoi(iminStr);
+                    float imin = atof(iminStr);
                     iMinHR->setValor(imin);
+                    snprintf(bufferLCD,sizeof(bufferLCD),"Conf Imin:%.1f",imin);
+                    ponEnColaLCD(3,bufferLCD);
                 }
                 const char* imaxStr = doc["imax"];
                 if (imaxStr)
                 {
                     chprintf((BaseSequentialStream *)&SD1,"{\"imax\":\"%s\"}\n",imaxStr);
-                    float imax = atoi(imaxStr);
+                    float imax = atof(imaxStr);
                     iMaxHR->setValor(imax);
+                    snprintf(bufferLCD,sizeof(bufferLCD),"Conf Imax:%.1f",imax);
+                    ponEnColaLCD(3,bufferLCD);
                 }
                 const char* numfasesStr = doc["numfases"];
                 if (numfasesStr)
@@ -125,6 +141,8 @@ static THD_FUNCTION(ThreadXiao, arg) {
                     chprintf((BaseSequentialStream *)&SD1,"{\"numfases\":\"%s\"}\n",numfasesStr);
                     uint8_t numFases = atoi(numfasesStr);
                     numFasesHR->setValor(numFases);
+                    snprintf(bufferLCD,sizeof(bufferLCD),"Conf #fases:%d",numFases);
+                    ponEnColaLCD(3,bufferLCD);
                 }
                 const char* numcontactoresStr = doc["numcontactores"];
                 if (numcontactoresStr)
@@ -132,6 +150,8 @@ static THD_FUNCTION(ThreadXiao, arg) {
                     chprintf((BaseSequentialStream *)&SD1,"{\"numcontactores\":\"%s\"}\n",numcontactoresStr);
                     uint8_t numContact = atoi(numcontactoresStr);
                     numContactoresHR->setValor(numContact);
+                    snprintf(bufferLCD,sizeof(bufferLCD),"Conf #contact:%d",numContact);
+                    ponEnColaLCD(3,bufferLCD);
                 }
                 // hay que reconfigurar home assistant
                 if (imaxStr || iminStr || numfasesStr || numcontactoresStr)
@@ -148,6 +168,8 @@ static THD_FUNCTION(ThreadXiao, arg) {
                     chprintf((BaseSequentialStream *)&SD1,"{\"medbaud\":\"%s\"}\n",medBaud);
                     uint32_t baudios = atoi(medBaud);
                     medBaudHR->setValor(baudios);
+                    snprintf(bufferLCD,sizeof(bufferLCD),"Conf #baud:%ld",baudios);
+                    ponEnColaLCD(3,bufferLCD);
                 }
                 const char* medId = doc["medid"];
                 if (medId)
@@ -155,6 +177,8 @@ static THD_FUNCTION(ThreadXiao, arg) {
                     chprintf((BaseSequentialStream *)&SD1,"{\"medid\":\"%s\"}\n",medId);
                     uint8_t id = atoi(medId);
                     medIdHR->setValor(id);
+                    snprintf(bufferLCD,sizeof(bufferLCD),"Conf MedId:%d",id);
+                    ponEnColaLCD(3,bufferLCD);
                 }
                 const char* medModelo = doc["medmodelo"];
                 if (medModelo)
@@ -162,6 +186,8 @@ static THD_FUNCTION(ThreadXiao, arg) {
                     chprintf((BaseSequentialStream *)&SD1,"{\"medmodelo\":\"%s\"}\n",medModelo);
 //                    uint8_t modMed = atoi(medModelo);
                     medModeloHR->setValor(medModelo);
+                    snprintf(bufferLCD,sizeof(bufferLCD),"Conf med:%s",medModelo);
+                    ponEnColaLCD(3,bufferLCD);
                 }
 
             }

@@ -230,7 +230,10 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
         else
             snprintf(bufferLCD,sizeof(bufferLCD),"Sin medidas");
         ponEnColaLCD(1,bufferLCD);
-        snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Isp:%4.1f", numFasesReal,Isetpoint);
+        if (!cargKona->getOsciladorOculto())
+            snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Isp:%4.1f", numFasesReal,Isetpoint);
+        else
+            snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Sin PWM", numFasesReal);
         ponEnColaLCD(2,bufferLCD);
         if (chThdShouldTerminateX())
         {

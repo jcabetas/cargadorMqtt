@@ -49,6 +49,7 @@ holdingRegisterFloat *iMaxHR;          // I max (A) *100
 holdingRegisterFloat *iMinHR;          // mA cuando no hay potencia (si es 0 abre contactor)
 holdingRegisterInt *numContactoresHR;  // numero de contactores
 holdingRegisterOpciones *controlContactHR;  // control de contactores {"solo el primero","mono-tri","los dos a la vez"};
+holdingRegisterInt *pDefaultSetPointHR;     // pSetpoint de defecto
 holdingRegisterFloat *iSetPointModbusHR;     // iSetpoint x100
 holdingRegisterFloat *pSetPointModbusHR;       // pSetpoint
 
@@ -100,6 +101,7 @@ void initHoldingRegisters(registrosModbus *modbusRegs)
    iMinHR = modbusRegs->addHoldingRegisterFloat("iMin",0.0f,7.0f, 5.0f, 100.0f, true, modbusRegs);
    numContactoresHR = modbusRegs->addHoldingRegisterInt("num Contact.", 1,2,1, true, checkNumContactores, modbusRegs);
    controlContactHR = modbusRegs->addHoldingRegisterOpciones("cont. Contact.", ctrlContactStr, 3,0, true, checkControlContactores, modbusRegs);
+   pDefaultSetPointHR = modbusRegs->addHoldingRegisterInt("Psp def. modbus", 1200, 11040, 5000, true, checkPspmodbus, modbusRegs);
    iSetPointModbusHR = modbusRegs->addHoldingRegisterFloat("Isp modbus", 7.0f, 32.0f, 16.0f, 100.0f, false, checkIspmodbus, modbusRegs);
    pSetPointModbusHR = modbusRegs->addHoldingRegisterFloat("Psp modbus", 0.0f, 11040.0f, 3600.0f, 1.0f, false, checkPspmodbus, modbusRegs);
 }

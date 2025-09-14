@@ -13,9 +13,12 @@ private:
     uint8_t osciladorOculto;
     uint8_t ondaNegOk;
     uint8_t numFasesReal;
+    uint8_t estadoRele1;
+    uint8_t estadoRele2;
     bool haCambiadoR;
     estadoRes_t oldStatusResis;
     systime_t horaDescFaltapot;
+    bool hayPot;
     systime_t horaHayMuchaPot;
 public:
     cargador(void);
@@ -32,6 +35,9 @@ public:
     void ponReles(uint8_t rele1, uint8_t rele2);
     void setNumFasesReal(uint8_t numFasesPar);
     uint8_t getNumFasesReal(void);
+    uint8_t getOsciladorOculto(void);
+    uint8_t getEstadoRele1(void);
+    uint8_t getEstadoRele2(void);
     void setEstadoRes(estadoRes_t estR);
     estadoRes_t getEstadoRes(void);
     void ponEstadoEnLCD(void);

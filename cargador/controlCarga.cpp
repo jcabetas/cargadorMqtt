@@ -27,7 +27,6 @@ extern medida *kWhActual;
 extern medida *kWhIniCarga;
 extern medida *Ptot;
 extern uint8_t numFasesReal;
-extern bool hayPot;
 uint16_t dsPAlta = 0;
 systime_t startUltEstado;
 float Isetpoint;
@@ -47,6 +46,8 @@ void  cargador::controlCarga(void)
     }
     // miramos si hay potencia
     Isetpoint = pSetPointModbusHR->getValor()/230.0f/numFasesReal;
+    if (Isetpoint>iMaxHR->getValor())
+        Isetpoint = iMaxHR->getValor();
     if (Isetpoint>=6.0f)
         hayPot = true;
     else
@@ -84,6 +85,12 @@ void  cargador::controlCarga(void)
         ponReles(0, 0);
         return;
     }
+    if (estadoCoche == RCONECTADO)
+    {
+        cargKona->fijaAmperios(Isetpoint);
+        ponReles(0, 0);
+        return;
+    }
     // monofásico o solo un contactor: poner reles, si procede
     if (numFasesHR->getValor()==1 || numContactoresHR->getValor()==1)
     {
@@ -98,6 +105,17 @@ void  cargador::controlCarga(void)
         {
             if (Isetpoint>16.0f)
                 Isetpoint = 16.0;
+            // si es un cambio de monofasico a trifasico, hay que desconectar y conectar
+            if (getEstadoRele2() == 0)
+            {
+                ocultaOscilador();
+                ponReles(0, 0);
+                chThdSleepMilliseconds(4000);
+                cargKona->fijaAmperios(Isetpoint);
+                sacaOscilador();
+                ponReles(1, 1);
+                chThdSleepMilliseconds(4000);
+            }
             ponReles(1, 1);
         }
         else

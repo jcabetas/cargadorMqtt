@@ -16,6 +16,7 @@ extern holdingRegisterFloat *iMaxHR;            // I max (A) *100
 extern holdingRegisterFloat *iMinHR;            // mA cuando no hay potencia (si es 0 abre contactor)
 extern holdingRegisterInt *numContactoresHR;    // numero de contactores
 extern holdingRegisterOpciones *controlContactHR;  // control de contactores (1 solo monofasico, 2: gestiona mono-tri, 3: trifasico)
+extern holdingRegisterInt *pDefaultSetPointHR;     // pSetpoint de defecto
 extern holdingRegisterFloat *iSetPointModbusHR;       // iSetpoint x100
 extern holdingRegisterFloat *pSetPointModbusHR;       // pSetpoint
 
