@@ -76,14 +76,14 @@ void initI2C(void)
 {
     palSetLineMode(LINE_I2C1SDA,PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_OSPEED_HIGHEST);
     palSetLineMode(LINE_I2C1SCL,PAL_MODE_ALTERNATE(4) | PAL_STM32_OTYPE_OPENDRAIN | PAL_STM32_OSPEED_HIGHEST);
-    chThdSleepMilliseconds(50); // espera a que se inicie LCD
+    chThdSleepMilliseconds(100); // espera a que se inicie LCD
     i2cStart(&LCD_I2C, &i2ccfg); // LCD
 }
 
 void initDisplay(void)
 {
     chEvtObjectInit(&updateLCD_source);
-   initI2C();
+    initI2C();
 #ifdef LCD
     lcd_I2Cinit();
     lcd_CustomChars();

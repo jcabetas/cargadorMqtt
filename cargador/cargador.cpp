@@ -166,6 +166,7 @@ static THD_WORKING_AREA(waCargador, 1024);
 static THD_FUNCTION(threadCargador, arg) {
     (void) arg;
     eventmask_t evt;
+    uint16_t ds = 0;
     chRegSetThreadName("Cargador");
     chEvtBroadcast(&enviarCoche_source);  // envia estado inicial
     event_listener_t haCambiadoADC_lis, haCambiadoPsp_lis;
@@ -186,7 +187,12 @@ static THD_FUNCTION(threadCargador, arg) {
             continue;
         }
         cargKona->bucleCargador();
-//        chThdSleepMilliseconds(500);
+        ds += 5;
+        if (ds>300)
+        {
+            ds = 0;
+            chEvtBroadcast(&enviarCoche_source);  // envia recordatorio estado cada 30s
+        }
     }
 }
 

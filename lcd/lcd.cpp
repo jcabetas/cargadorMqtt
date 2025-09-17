@@ -395,6 +395,7 @@ void lcd_write4bits(uint8_t value) {
 uint8_t lcd_expanderWrite(uint8_t _data){
 	uint8_t tx_data[2], rx_data[2];
 	msg_t status;
+    if (!hayLcd) return 99;
 	tx_data[0] = _data | _backlightval;
 	systime_t tmo = TIME_MS2I(500); // TIME_INFINITE; //
 	i2cAcquireBus(&LCD_I2C);
@@ -565,6 +566,8 @@ int chLcdprintfFilaC(uint8_t fila, const char *fmt, ...)
 
 void lcd_CustomChars(void)
 {
+    if (!hayLcd)
+        return;
     lcd_command(0x40); // Set pointer to CGRAM
     lcd_send(0b10001,1); // simbolo antena
     lcd_send(0b01010,1);

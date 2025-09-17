@@ -201,6 +201,16 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
                                      Ptot->getValor(), Ia->getValor(),kWhActual->getValor(), kWhActual->getValor()-kWhIniCarga->getValor());
                 chEvtBroadcast(&enviarMedidas_source);
             }
+            if (!error)
+            {
+                snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
+                ponEnColaLCD(1,bufferLCD);
+            }
+            if (!cargKona->getOsciladorOculto())
+                snprintf(bufferLCD,sizeof(bufferLCD),"Isp:%4.1f", numFasesReal,Isetpoint);
+            else
+                snprintf(bufferLCD,sizeof(bufferLCD),"Sin PWM", numFasesReal);
+            ponEnColaLCD(2,bufferLCD);
         }
         else if (medModeloHR->getValor() == 2)  // sdm630ct
         {
@@ -224,17 +234,27 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
                            Ptot->getValor(), Ia->getValor(),Ic->getValor(),Ib->getValor(),kWhActual->getValor(), kWhActual->getValor()-kWhIniCarga->getValor(),numFasesReal);
                 chEvtBroadcast(&enviarMedidas_source);
             }
+            if (!error)
+            {
+                snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
+                ponEnColaLCD(1,bufferLCD);
+            }
+            if (!cargKona->getOsciladorOculto())
+                snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Isp:%4.1f", numFasesReal,Isetpoint);
+            else
+                snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Sin PWM", numFasesReal);
+            ponEnColaLCD(2,bufferLCD);
         }
-        if (!error)
-            snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
-        else
-            snprintf(bufferLCD,sizeof(bufferLCD),"Sin medidas");
-        ponEnColaLCD(1,bufferLCD);
-        if (!cargKona->getOsciladorOculto())
-            snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Isp:%4.1f", numFasesReal,Isetpoint);
-        else
-            snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Sin PWM", numFasesReal);
-        ponEnColaLCD(2,bufferLCD);
+//        if (!error)
+//            snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
+//        else
+//            snprintf(bufferLCD,sizeof(bufferLCD),"Sin medidas");
+//        ponEnColaLCD(1,bufferLCD);
+//        if (!cargKona->getOsciladorOculto())
+//            snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Isp:%4.1f", numFasesReal,Isetpoint);
+//        else
+//            snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Sin PWM", numFasesReal);
+//        ponEnColaLCD(2,bufferLCD);
         if (chThdShouldTerminateX())
         {
             chThdExit((msg_t) 1);

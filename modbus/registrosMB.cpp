@@ -40,6 +40,7 @@ const char *medStr[3] = {"No hay","sdm120ct","sdm630ct"};
 const char *ctrlContactStr[3] = {"solo el primero","mono-tri","los dos a la vez"};
 extern char *cocheStr[5];// {"desconoc.", "sin coche", "conectado","pide","pide vent."};
 
+extern   uint8_t hayLcd;
 
 holdingRegisterInt *medIdHR;         // Id modbus ordenador
 holdingRegisterInt2Ext *medBaudHR;   // baudios ordenador
@@ -152,6 +153,8 @@ void initInputRegisters(registrosModbus *modbusRegs)
 void ponConfigEnLCD(void)
 {
     char bufferLCD[25];
+    if (!hayLcd)
+        return;
     snprintf(bufferLCD,sizeof(bufferLCD),"Modelo med: %s", medModeloHR->getDescripcion());
     ponEnColaLCD(0,bufferLCD);
     snprintf(bufferLCD,sizeof(bufferLCD),"Id:%-3d    baud:%5ld", medIdHR->getValor(),medBaudHR->getValor());
