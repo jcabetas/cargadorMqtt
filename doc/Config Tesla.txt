@@ -1,0 +1,137 @@
+{"dev":{"ids":"cargAEFE","name":"Tesla","mf":"jcf","mdl":"cargador MB mqtt","sw":"1.0","sn":"AEFE","hw":"cargV2"},"o":{"name":"Tesla"},"cmps":{"estado_coche":{"unique_id":"statAEFE","name":"estado","icon":"mdi:car","p":"sensor","avty_t":"Tesla/availability","pl_avail":"online","pl_not_avail":"offline","state_topic":"Tesla/coche","device_class":"enum","value_template":"{{ value_json.coche }}","options":["Desconoc","Desconect","Conectado","Pide","Pide vent"]},"p":{"unique_id":"p_AEFE","name":"potencia","icon":"mdi:car","p":"sensor","avty_t":"Tesla/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Tesla/medidas","device_class":"power","unit_of_measurement":"W","value_template":"{{ value_json.p }}"},"kwh":{"unique_id":"kwh_AEFE","name":"kWh","icon":"mdi:car","p":"sensor","avty_t":"Tesla/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Tesla/medidas","device_class":"energy","unit_of_measurement":"kWh","value_template":"{{ value_json.kwh }}"},"kwhcarga":{"unique_id":"kwhcarga_AEFE","name":"kWh carga","icon":"mdi:car","p":"sensor","avty_t":"Tesla/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Tesla/medidas","device_class":"energy","unit_of_measurement":"kWh","value_template":"{{ value_json.kwhcarga }}"},"ia":{"unique_id":"ia_AEFE","name":"Ia","icon":"mdi:car","p":"sensor","avty_t":"Tesla/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Tesla/medidas","device_class":"current","unit_of_measurement":"A","value_template":"{{ value_json.ia }}"},"ib":{"unique_id":"ib_AEFE","name":"Ib","icon":"mdi:car","p":"sensor","avty_t":"Tesla/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Tesla/medidas","device_class":"current","unit_of_measurement":"A","value_template":"{{ value_json.ib }}"},"ic":{"unique_id":"ic_AEFE","name":"Ic","icon":"mdi:car","p":"sensor","avty_t":"Tesla/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Tesla/medidas","device_class":"current","unit_of_measurement":"A","value_template":"{{ value_json.ic }}"},"psp":{"unique_id":"pspAEFE","name":"Psetpoint","icon":"mdi:sine-wave","avty_t":"Tesla/availability","pl_avail":"online","pl_not_avail":"offline","p":"number","mode":"slider","min":"0","max":"11040","step":"100.0","cmd_t":"Tesla/psp/set","stat_t":"Tesla/psp","value_template":"{{ value_json.psp }}"}}}
+
+{
+   "dev":{
+      "ids":"cargAEFE",
+      "name":"Tesla",
+      "mf":"jcf",
+      "mdl":"cargador MB mqtt",
+      "sw":"1.0",
+      "sn":"AEFE",
+      "hw":"cargV2"
+   },
+   "o":{
+      "name":"Tesla"
+   },
+   "cmps":{
+      "estado_coche":{
+         "unique_id":"statAEFE",
+         "name":"estado",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Tesla/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "state_topic":"Tesla/coche",
+         "device_class":"enum",
+         "value_template":"{{ value_json.coche }}",
+         "options":[
+            "Desconoc",
+            "Desconect",
+            "Conectado",
+            "Pide",
+            "Pide vent"
+         ]
+      },
+      "p":{
+         "unique_id":"p_AEFE",
+         "name":"potencia",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Tesla/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Tesla/medidas",
+         "device_class":"power",
+         "unit_of_measurement":"W",
+         "value_template":"{{ value_json.p }}"
+      },
+      "kwh":{
+         "unique_id":"kwh_AEFE",
+         "name":"kWh",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Tesla/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Tesla/medidas",
+         "device_class":"energy",
+         "unit_of_measurement":"kWh",
+         "value_template":"{{ value_json.kwh }}"
+      },
+      "kwhcarga":{
+         "unique_id":"kwhcarga_AEFE",
+         "name":"kWh carga",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Tesla/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Tesla/medidas",
+         "device_class":"energy",
+         "unit_of_measurement":"kWh",
+         "value_template":"{{ value_json.kwhcarga }}"
+      },
+      "ia":{
+         "unique_id":"ia_AEFE",
+         "name":"Ia",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Tesla/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Tesla/medidas",
+         "device_class":"current",
+         "unit_of_measurement":"A",
+         "value_template":"{{ value_json.ia }}"
+      },
+      "ib":{
+         "unique_id":"ib_AEFE",
+         "name":"Ib",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Tesla/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Tesla/medidas",
+         "device_class":"current",
+         "unit_of_measurement":"A",
+         "value_template":"{{ value_json.ib }}"
+      },
+      "ic":{
+         "unique_id":"ic_AEFE",
+         "name":"Ic",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Tesla/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Tesla/medidas",
+         "device_class":"current",
+         "unit_of_measurement":"A",
+         "value_template":"{{ value_json.ic }}"
+      },
+      "psp":{
+         "unique_id":"pspAEFE",
+         "name":"Psetpoint",
+         "icon":"mdi:sine-wave",
+         "avty_t":"Tesla/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "p":"number",
+         "mode":"slider",
+         "min":"0",
+         "max":"11040",
+         "step":"100.0",
+         "cmd_t":"Tesla/psp/set",
+         "stat_t":"Tesla/psp",
+         "value_template":"{{ value_json.psp }}"
+      }
+   }
+}

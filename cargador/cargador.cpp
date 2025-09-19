@@ -121,6 +121,19 @@ void cargador::setNumFasesReal(uint8_t numFasesPar)
     numFasesReal = numFasesPar;
 }
 
+
+void cargador::ponHoraPsp(void)
+{
+    horaUltSetpoint = chVTGetSystemTime();
+}
+
+uint32_t cargador::getSecSinPsp(void)
+{
+    sysinterval_t duracion = chVTTimeElapsedSinceX(horaDescFaltapot);
+    return TIME_I2S(duracion);
+}
+
+
 uint8_t cargador::getNumFasesReal(void)
 {
     return numFasesReal;
@@ -185,6 +198,12 @@ static THD_FUNCTION(threadCargador, arg) {
             cargKona->ponEstadoEnLCD();
             chEvtBroadcast(&enviarCoche_source);  // envia el cambio a Xiao
             continue;
+        }
+        if (cargKona->getSecSinPsp()>30)
+        {
+            uint16_t pspdef = pDefaultSetPointHR->getValor();
+            pSetPointModbusHR->setValor(pspdef);
+            cargKona->ponHoraPsp();    // nos dara otros 30s
         }
         cargKona->bucleCargador();
         ds += 5;

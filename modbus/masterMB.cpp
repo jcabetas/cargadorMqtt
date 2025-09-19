@@ -207,9 +207,9 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
                 ponEnColaLCD(1,bufferLCD);
             }
             if (!cargKona->getOsciladorOculto())
-                snprintf(bufferLCD,sizeof(bufferLCD),"Isp:%4.1f", numFasesReal,Isetpoint);
+                snprintf(bufferLCD,sizeof(bufferLCD),"Isp:%4.1f", Isetpoint);
             else
-                snprintf(bufferLCD,sizeof(bufferLCD),"Sin PWM", numFasesReal);
+                snprintf(bufferLCD,sizeof(bufferLCD),"Sin PWM");
             ponEnColaLCD(2,bufferLCD);
         }
         else if (medModeloHR->getValor() == 2)  // sdm630ct

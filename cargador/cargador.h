@@ -18,6 +18,7 @@ private:
     bool haCambiadoR;
     estadoRes_t oldStatusResis;
     systime_t horaDescFaltapot;
+    systime_t horaUltSetpoint;
     bool hayPot;
     systime_t horaHayMuchaPot;
 public:
@@ -34,6 +35,8 @@ public:
     void incrementaTimers(uint16_t ds);
     void ponReles(uint8_t rele1, uint8_t rele2);
     void setNumFasesReal(uint8_t numFasesPar);
+    void ponHoraPsp(void);
+    uint32_t getSecSinPsp(void);
     uint8_t getNumFasesReal(void);
     uint8_t getOsciladorOculto(void);
     uint8_t getEstadoRele1(void);

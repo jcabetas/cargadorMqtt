@@ -36,7 +36,7 @@ event_source_t haCambiadoPsp_source;
 
 extern char bufferMedidas[500];
 
-static THD_WORKING_AREA(waThreadXiao, 2048);
+static THD_WORKING_AREA(waThreadXiao, 4024);
 static THD_FUNCTION(ThreadXiao, arg) {
     (void)arg;
     chRegSetThreadName("xiao");
@@ -106,6 +106,7 @@ static THD_FUNCTION(ThreadXiao, arg) {
                     float Psp = atof(psp);
                     pSetPointModbusHR->setValor(Psp);
                     cargKona->ponEstadoEnLCD();
+                    cargKona->ponHoraPsp();
                     chEvtBroadcast(&haCambiadoPsp_source);  // notifica el cambio de PSP
                 }
                 const char* pDefaultStr = doc["pspdefault"];

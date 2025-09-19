@@ -15,7 +15,7 @@
 #include "colas.h"
 #include "string.h"
 
-#define NUMMSGLCDENCOLA  5
+#define NUMMSGLCDENCOLA  10
 
 extern event_source_t updateLCD_source;
 mutex_t MtxMsgLcd;

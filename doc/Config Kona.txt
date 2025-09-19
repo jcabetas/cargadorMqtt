@@ -1,0 +1,111 @@
+{"dev":{"ids":"cargADFE","name":"Kona","mf":"jcf","mdl":"cargador MB mqtt","sw":"1.0","sn":"ADFE","hw":"cargV2"},"o":{"name":"Kona"},"cmps":{"estado_coche":{"unique_id":"statADFE","name":"estado","icon":"mdi:car","p":"sensor","avty_t":"Kona/availability","pl_avail":"online","pl_not_avail":"offline","state_topic":"Kona/coche","device_class":"enum","value_template":"{{ value_json.coche }}","options":["Desconoc","Desconect","Conectado","Pide","Pide vent"]},"p":{"unique_id":"p_ADFE","name":"potencia","icon":"mdi:car","p":"sensor","avty_t":"Kona/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Kona/medidas","device_class":"power","unit_of_measurement":"W","value_template":"{{ value_json.p }}"},"kwh":{"unique_id":"kwh_ADFE","name":"kWh","icon":"mdi:car","p":"sensor","avty_t":"Kona/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Kona/medidas","device_class":"energy","unit_of_measurement":"kWh","value_template":"{{ value_json.kwh }}"},"kwhcarga":{"unique_id":"kwhcarga_ADFE","name":"kWh carga","icon":"mdi:car","p":"sensor","avty_t":"Kona/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Kona/medidas","device_class":"energy","unit_of_measurement":"kWh","value_template":"{{ value_json.kwhcarga }}"},"ia":{"unique_id":"ia_ADFE","name":"Ia","icon":"mdi:car","p":"sensor","avty_t":"Kona/availability","pl_avail":"online","pl_not_avail":"offline","expire_after":30,"state_topic":"Kona/medidas","device_class":"current","unit_of_measurement":"A","value_template":"{{ value_json.ia }}"},"psp":{"unique_id":"pspADFE","name":"Psetpoint","icon":"mdi:sine-wave","avty_t":"Kona/availability","pl_avail":"online","pl_not_avail":"offline","p":"number","mode":"slider","min":"0","max":"7360","step":"100.0","cmd_t":"Kona/psp/set","stat_t":"Kona/psp","value_template":"{{ value_json.psp }}"}}}
+
+topic homeassistant/device/Kona/cargmqtt/config
+
+{
+   "dev":{
+      "ids":"cargADFE",
+      "name":"Kona",
+      "mf":"jcf",
+      "mdl":"cargador MB mqtt",
+      "sw":"1.0",
+      "sn":"ADFE",
+      "hw":"cargV2"
+   },
+   "o":{
+      "name":"Kona"
+   },
+   "cmps":{
+      "estado_coche":{
+         "unique_id":"statADFE",
+         "name":"estado",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Kona/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "state_topic":"Kona/coche",
+         "device_class":"enum",
+         "value_template":"{{ value_json.coche }}",
+         "options":[
+            "Desconoc",
+            "Desconect",
+            "Conectado",
+            "Pide",
+            "Pide vent"
+         ]
+      },
+      "p":{
+         "unique_id":"p_ADFE",
+         "name":"potencia",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Kona/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Kona/medidas",
+         "device_class":"power",
+         "unit_of_measurement":"W",
+         "value_template":"{{ value_json.p }}"
+      },
+      "kwh":{
+         "unique_id":"kwh_ADFE",
+         "name":"kWh",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Kona/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Kona/medidas",
+         "device_class":"energy",
+         "unit_of_measurement":"kWh",
+         "value_template":"{{ value_json.kwh }}"
+      },
+      "kwhcarga":{
+         "unique_id":"kwhcarga_ADFE",
+         "name":"kWh carga",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Kona/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Kona/medidas",
+         "device_class":"energy",
+         "unit_of_measurement":"kWh",
+         "value_template":"{{ value_json.kwhcarga }}"
+      },
+      "ia":{
+         "unique_id":"ia_ADFE",
+         "name":"Ia",
+         "icon":"mdi:car",
+         "p":"sensor",
+         "avty_t":"Kona/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "expire_after":30,
+         "state_topic":"Kona/medidas",
+         "device_class":"current",
+         "unit_of_measurement":"A",
+         "value_template":"{{ value_json.ia }}"
+      },
+      "psp":{
+         "unique_id":"pspADFE",
+         "name":"Psetpoint",
+         "icon":"mdi:sine-wave",
+         "avty_t":"Kona/availability",
+         "pl_avail":"online",
+         "pl_not_avail":"offline",
+         "p":"number",
+         "mode":"slider",
+         "min":"0",
+         "max":"7360",
+         "step":"100.0",
+         "cmd_t":"Kona/psp/set",
+         "stat_t":"Kona/psp",
+         "value_template":"{{ value_json.psp }}"
+      }
+   }
+}
