@@ -83,9 +83,9 @@ static THD_FUNCTION(ThreadXiao, arg) {
                         pmax = 11040.0f;
                     chprintf((BaseSequentialStream *)&SD1,"{\"orden\":\"config\",\"numfases\":\"%d\""
                              ",\"imin\":\"%.1f\",\"imax\":\"%.1f\",\"pmin\":\"%d\",\"pmax\":\"%d\",\"numcontactores\":\"%d\""
-                             ",\"medbaud\":\"%d\",\"medid\":\"%d\",\"pspdefault\":\"%d\"}\n",
+                             ",\"medbaud\":\"%d\",\"medid\":\"%d\",\"pspdefault\":\"%d\",\"medmodelo\":\"%d\"}\n",
                              numFasesHR->getValor(), iMinHR->getValor(), iMaxHR->getValor(), pmin, pmax,numContactoresHR->getValor(),
-                             medBaudHR->getValor(),medIdHR->getValor(),pDefaultSetPointHR->getValor());
+                             medBaudHR->getValor(),medIdHR->getValor(),pDefaultSetPointHR->getValor(),medModeloHR->getValor());
                 }
                 // tengo que enviar estado actual ("orden\":\"diestado\") ?
                 if (doc["orden"] && !strcmp("diestado",doc["orden"]))

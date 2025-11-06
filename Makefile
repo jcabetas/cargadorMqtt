@@ -121,6 +121,8 @@ include $(CHIBIOS)/tools/mk/autobuild.mk
 # Other files (optional).
 include $(CHIBIOS)/os/hal/lib/streams/streams.mk
 include $(CHIBIOS)/os/various/cpp_wrappers/chcpp.mk
+# mi libreria
+include /home/joaquin/Desarrollos/librerias/librerias.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F411xE.ld
@@ -135,7 +137,7 @@ CSRC = $(ALLCSRC) \
 # setting.
 CPPSRC = $(ALLCPPSRC) \
          w25q16/w25q16.cpp variables/varsGestion.cpp variables/volcarFlash.cpp  version.cpp \
-         serial.cpp tty/gets.cpp heap.cpp lcd/lcd.cpp lcd/threadDisplay.cpp \
+         serial.cpp tty/gets.cpp heap.cpp \
          calendar/rtcV2UTC.cpp calendar/calendarUTC.cpp \
          colas/colas.cpp colas/colasMensajesRx.cpp colas/colasMensajesTx.cpp colas/colasMensajesLcd.cpp \
          modbuslib/crc.cpp modbuslib/holdingRegisters.cpp modbuslib/inputRegisters.cpp \
@@ -145,7 +147,7 @@ CPPSRC = $(ALLCPPSRC) \
          cargador/tests.cpp cargador/oscilador.cpp cargador/adc.cpp cargador/cargador.cpp cargador/controlCarga.cpp
          
          
-         #modbus/modbus.cpp modbus/crc.cpp modbus/debugModbus.cpp threadPulsador.cpp
+         #modbus/modbus.cpp modbus/crc.cpp modbus/debugModbus.cpp threadPulsador.cpp  lcd/lcd.cpp lcd/threadDisplay.cpp
 
 
 #         usbSource/serialUSB.cpp w25q16/varsFlash.cpp

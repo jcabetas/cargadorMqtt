@@ -129,7 +129,7 @@ void cargador::ponHoraPsp(void)
 
 uint32_t cargador::getSecSinPsp(void)
 {
-    sysinterval_t duracion = chVTTimeElapsedSinceX(horaDescFaltapot);
+    sysinterval_t duracion = chVTTimeElapsedSinceX(horaUltSetpoint);
     return TIME_I2S(duracion);
 }
 

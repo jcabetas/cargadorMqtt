@@ -41,6 +41,8 @@ void  cargador::controlCarga(void)
     if (estadoCoche < RCONECTADO)
     {
         ocultaOscilador();
+        if (getEstadoRele1())  // si el rele estaba conectado, deja tiempo a que desconecte el coche
+            chThdSleepMilliseconds(50);
         ponReles(0, 0);
         return;
     }
@@ -53,7 +55,7 @@ void  cargador::controlCarga(void)
     else
         hayPot = false;
     // actualizo hay mucha potencia
-    if (Isetpoint>26.0f || (Isetpoint>7.0f && numFasesReal>1))
+    if (estadoCoche>=RPIDECARGA && (Isetpoint>0.95f*iMaxHR->getValor() || (Isetpoint>7.0f && numFasesReal>1)))
     {
         if (horaHayMuchaPot==0)
             horaHayMuchaPot = chVTGetSystemTime();
@@ -66,7 +68,7 @@ void  cargador::controlCarga(void)
         if (osciladorOculto) // compruebo que ha pasado un tiempo desde ult. desconexion por potencia
         {
             sysinterval_t duracion = chVTTimeElapsedSinceX(horaDescFaltapot);
-            if (TIME_I2S(duracion) > 10)
+            if (TIME_I2S(duracion) > 60)
                 sacaOscilador();
         }
         else
@@ -82,12 +84,16 @@ void  cargador::controlCarga(void)
     // si no hay chicha, no pomgas reles
     if (!hayPot || osciladorOculto)
     {
+        if (getEstadoRele1())  // si el rele estaba conectado, deja tiempo a que desconecte el coche
+            chThdSleepMilliseconds(50);
         ponReles(0, 0);
         return;
     }
     if (estadoCoche == RCONECTADO)
     {
         cargKona->fijaAmperios(Isetpoint);
+        if (getEstadoRele1())  // si el rele estaba conectado, deja tiempo a que desconecte el coche
+            chThdSleepMilliseconds(50);
         ponReles(0, 0);
         return;
     }
@@ -101,15 +107,16 @@ void  cargador::controlCarga(void)
         // hay dos contactores...
         // si hay mucha potencia, conecta los dos contactores
         sysinterval_t duracion = chVTTimeElapsedSinceX(horaHayMuchaPot);
-        if (horaHayMuchaPot!=0 && TIME_I2S(duracion) > 30)
+        if (horaHayMuchaPot!=0 && TIME_I2S(duracion) > 300)
         {
-            if (Isetpoint>16.0f)
-                Isetpoint = 16.0;
             // si es un cambio de monofasico a trifasico, hay que desconectar y conectar
             if (getEstadoRele2() == 0)
             {
                 ocultaOscilador();
+                if (getEstadoRele1())  // si el rele estaba conectado, deja tiempo a que desconecte el coche
+                    chThdSleepMilliseconds(50);
                 ponReles(0, 0);
+                ponEnColaLCD(3,"Cambio a trifasico");
                 chThdSleepMilliseconds(4000);
                 cargKona->fijaAmperios(Isetpoint);
                 sacaOscilador();
