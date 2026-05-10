@@ -18,6 +18,8 @@
 #include "hal.h"
 #include "lcd.h"
 #include <stdio.h>
+#include "libreriaConfig.h"
+#include "colasRXTX.h"
 
 void initColas(void);
 void initDisplay(void);
@@ -26,6 +28,8 @@ int8_t initModbusMaster(void);
 void initCargador(void);
 void initSerial(void);
 void ponConfigEnLCD(void);
+void initColaMsgTxC(void);
+void initColaMsgRxC(void);
 
 extern event_source_t enviarCoche_source;
 extern event_source_t enviarMedidas_source;
@@ -36,6 +40,19 @@ extern event_source_t haCambiadoPsp_source;
  * Cargador STM32 modbus
  */
 
+static const I2CConfig i2ccfg = {
+  OPMODE_I2C,
+  400000,
+  FAST_DUTY_CYCLE_2,
+};
+
+
+void initI2C(void)
+{
+    // los pines I2C se deben inicializar en board.h
+    i2cStart(&LCD_I2C, &i2ccfg); // LCD
+}
+
 int main(void) {
   halInit();
   chSysInit();
@@ -43,7 +60,9 @@ int main(void) {
   chEvtObjectInit(&enviarMedidas_source);
   chEvtObjectInit(&haCambiadoADC_source);
   chEvtObjectInit(&haCambiadoPsp_source);
-  initColas();
+  //initColas();
+  initColaMsgRxC();
+  initColaMsgTxC();
   initDisplay();
   initRegistrosMB();
   ponConfigEnLCD();

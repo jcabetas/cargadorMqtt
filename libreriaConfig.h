@@ -9,7 +9,7 @@
 #define CARGADOR_H_
 
 #define LCD_I2C (I2CD1)
-#define LCD
+#define LCD2004
 #undef SSD1306
 #define LCD_COLS 20
 #define LCD_ROWS  4

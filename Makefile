@@ -139,13 +139,14 @@ CPPSRC = $(ALLCPPSRC) \
          w25q16/w25q16.cpp variables/varsGestion.cpp variables/volcarFlash.cpp  version.cpp \
          serial.cpp tty/gets.cpp heap.cpp \
          calendar/rtcV2UTC.cpp calendar/calendarUTC.cpp \
-         colas/colas.cpp colas/colasMensajesRx.cpp colas/colasMensajesTx.cpp colas/colasMensajesLcd.cpp \
+         colasRXTX/colasMensajesRx.cpp colasRXTX/colasMensajesTx.cpp \
          modbuslib/crc.cpp modbuslib/holdingRegisters.cpp modbuslib/inputRegisters.cpp \
          modbus/masterMB.cpp modbus/registrosMB.cpp \
          modbuslib/modbus.cpp modbuslib/modbusMaestro.cpp modbus/modbusRegistros.cpp \
          dispositivos/dispositivos.cpp dispositivos/sdm120ct.cpp dispositivos/sdm630ct.cpp dispositivos/medida.cpp  \
          cargador/tests.cpp cargador/oscilador.cpp cargador/adc.cpp cargador/cargador.cpp cargador/controlCarga.cpp
          
+#         colas/colas.cpp colas/colasMensajesRx.cpp colas/colasMensajesTx.cpp colas/colasMensajesLcd.cpp \
          
          #modbus/modbus.cpp modbus/crc.cpp modbus/debugModbus.cpp threadPulsador.cpp  lcd/lcd.cpp lcd/threadDisplay.cpp
 
@@ -182,7 +183,7 @@ UDEFS = -DCHPRINTF_USE_FLOAT=TRUE
 UADEFS =
 
 # List all user directories here
-UINCDIR = $(CHIBIOS)/os/hal/lib/streams usbSource cfg w25q16 variables tty json calendar lcd colas ssd1306 modbus modbuslib dispositivos cargador
+UINCDIR = $(CHIBIOS)/os/hal/lib/streams usbSource cfg w25q16 variables tty json calendar lcd colas colasRXTX ssd1306 modbus modbuslib dispositivos cargador
 # List the user directory to look for the libraries here
 ULIBDIR =
 

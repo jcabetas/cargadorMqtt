@@ -7,7 +7,12 @@
 #include "hal.h"
 #include "ch.h"
 #include "colas.h"
+#include "colasRXTX.h"
 #include "string.h"
+
+extern "C" {
+  void initColaMsgRxC(void);
+}
 
 #define NUMMSGRXENCOLA  5
 
@@ -37,4 +42,9 @@ void cogerMsgRxDeCola(uint16_t pos, void *ptrStructDestino)
 void initColaMsgRx(void)
 {
     initQueu(&colaMsgRx, &MtxMsgRx, NUMMSGRXENCOLA, ponerMsgRxEnCola, cogerMsgRxDeCola);
+}
+
+void initColaMsgRxC(void)
+{
+  initColaMsgRx();
 }
