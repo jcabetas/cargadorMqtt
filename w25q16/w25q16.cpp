@@ -276,7 +276,7 @@ void W25Q16_releasePowerDown(void) {
  */
 void W25Q16_sectorErase(uint16_t page)
 {
-  uint8_t txbf[1], rxbf[1];
+  uint8_t txbf[4], rxbf[4];
   W25Q16_writeEnable();
   spiAcquireBus(&SPID1);
   txbf[0] = SECTOR_ERASE;
