@@ -65,6 +65,12 @@ static THD_FUNCTION(ThreadXiao, arg) {
             if (! (flags & CHN_INPUT_AVAILABLE))
                 continue;
             chgetsNoEchoTimeOut((BaseChannel *)&SD1, buffer, sizeof(buffer),TIME_MS2I(1000), &huboTimeout);
+            if (buffer[0]!=0)
+            {
+                snprintf(bufferLCD,sizeof(bufferLCD),"<= ");
+                strncpy(&bufferLCD[3], (char *) buffer,18);
+                ponEnColaLCD(3,bufferLCD);
+            }
             if (!huboTimeout)
             {
                 // Deserialize the JSON document
@@ -86,6 +92,13 @@ static THD_FUNCTION(ThreadXiao, arg) {
                              ",\"medbaud\":\"%d\",\"medid\":\"%d\",\"pspdefault\":\"%d\",\"medmodelo\":\"%d\"}\n",
                              numFasesHR->getValor(), iMinHR->getValor(), iMaxHR->getValor(), pmin, pmax,numContactoresHR->getValor(),
                              medBaudHR->getValor(),medIdHR->getValor(),pDefaultSetPointHR->getValor(),medModeloHR->getValor());
+                }
+                // orden de resetear?
+                if (doc["orden"] && !strcmp("reset",doc["orden"]))
+                {
+                    ponEnColaLCD(3,"<= RESETEAR!!");
+                    chThdSleepMilliseconds(1000);
+                    NVIC_SystemReset();
                 }
                 // tengo que enviar estado actual ("orden\":\"diestado\") ?
                 if (doc["orden"] && !strcmp("diestado",doc["orden"]))
@@ -196,13 +209,15 @@ static THD_FUNCTION(ThreadXiao, arg) {
         if (evt & EVENT_MASK(1)) // Me han pedido que envie estado de coche
         {
             chprintf((BaseSequentialStream *)&SD1,"{\"coche\":\"%s\",\"psp\":\"%.1f\"}\n",cocheStr[conexCocheIR->getValor()], pSetPointModbusHR->getValor());
+            ponEnColaLCD(3,"=> estado coche");
         }
         if (evt & EVENT_MASK(2)) // Me han pedido que envie medidas
         {
             chprintf((BaseSequentialStream *)&SD1,"%s\n",bufferMedidas);
-            bufferMedidas[0] = (char) 0;
-            snprintf(bufferLCD,sizeof(bufferLCD),"Envio buffmed");
+            snprintf(bufferLCD,sizeof(bufferLCD),"=> ");
+            strncpy(&bufferLCD[3], bufferMedidas,18);
             ponEnColaLCD(3,bufferLCD);
+            bufferMedidas[0] = (char) 0;
         }
     }
 }

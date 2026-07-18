@@ -239,8 +239,6 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
                                                               "\"ic\":\"%.2f\",\"kwh\":\"%.2f\",\"kwhcarga\":\"%.2f\",\"numfasesreal\":\"%d\"}",
                            Ptot->getValor(), Ia->getValor(),Ic->getValor(),Ib->getValor(),kWhActual->getValor(), kWhActual->getValor()-kWhIniCarga->getValor(),numFasesReal);
                 chEvtBroadcast(&enviarMedidas_source);
-                snprintf(bufferLCD,sizeof(bufferLCD),"Buffmed %4.1fA", Ia->getValor());
-                ponEnColaLCD(3,bufferLCD);
             }
             if (!error)
             {
