@@ -206,6 +206,12 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
                 snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
                 ponEnColaLCD(1,bufferLCD);
             }
+            else
+            {
+                snprintf(bufferLCD,sizeof(bufferLCD),"Error medida");
+                ponEnColaLCD(1,bufferLCD);
+            }
+
             if (!cargKona->getOsciladorOculto())
                 snprintf(bufferLCD,sizeof(bufferLCD),"Isp:%4.1f", Isetpoint);
             else
@@ -233,10 +239,17 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
                                                               "\"ic\":\"%.2f\",\"kwh\":\"%.2f\",\"kwhcarga\":\"%.2f\",\"numfasesreal\":\"%d\"}",
                            Ptot->getValor(), Ia->getValor(),Ic->getValor(),Ib->getValor(),kWhActual->getValor(), kWhActual->getValor()-kWhIniCarga->getValor(),numFasesReal);
                 chEvtBroadcast(&enviarMedidas_source);
+                snprintf(bufferLCD,sizeof(bufferLCD),"Buffmed %4.1fA", Ia->getValor());
+                ponEnColaLCD(3,bufferLCD);
             }
             if (!error)
             {
                 snprintf(bufferLCD,sizeof(bufferLCD),"%4.1fkWh %4.1fA %5dW", kWhActual->getValor()-kWhIniCarga->getValor(), Ia->getValor(), (uint16_t) Ptot->getValor());
+                ponEnColaLCD(1,bufferLCD);
+            }
+            else
+            {
+                snprintf(bufferLCD,sizeof(bufferLCD),"Error medida");
                 ponEnColaLCD(1,bufferLCD);
             }
             if (!cargKona->getOsciladorOculto())

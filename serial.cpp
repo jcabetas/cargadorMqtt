@@ -201,6 +201,8 @@ static THD_FUNCTION(ThreadXiao, arg) {
         {
             chprintf((BaseSequentialStream *)&SD1,"%s\n",bufferMedidas);
             bufferMedidas[0] = (char) 0;
+            snprintf(bufferLCD,sizeof(bufferLCD),"Envio buffmed");
+            ponEnColaLCD(3,bufferLCD);
         }
     }
 }

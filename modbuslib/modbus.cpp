@@ -61,6 +61,7 @@ int16_t modbus::envioStrModbus(uint8_t *str, uint16_t lenStr, sysinterval_t time
     eventmask_t evt;
     event_listener_t endEot_event;
     chEvtRegisterMaskWithFlags (chnGetEventSource(SD),&endEot_event, EVENT_MASK (0),CHN_TRANSMISSION_END);
+    palSetLine(LINE_LED);
     palSetLine(rxtxLine);
 //    chThdSleepMilliseconds(2);
     chThdSleepMicroseconds(usIntermsg);
@@ -75,6 +76,7 @@ int16_t modbus::envioStrModbus(uint8_t *str, uint16_t lenStr, sysinterval_t time
     }
     chEvtUnregister(chnGetEventSource(SD),&endEot_event);
     palClearLine(rxtxLine);
+    palClearLine(LINE_LED);
     if (evt==0)
         return 1;
     return 0;

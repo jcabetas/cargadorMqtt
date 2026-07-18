@@ -40,6 +40,9 @@
        Si no hay potencia se elige entre intensidad de parada o abrir contactor
   - Coche deja de pedir: 
     => Se abre contactor, manteniendo oscilador.
+    
+## Configuración
+  - Poner medidor: mosquitto_pub -h 192.168.1.61 -u joaquin -P JeW31ZT9Rdx  -t "Cargador/config" -m '{"orden":"config","medmodelo":"sdm120ct"}'
 
 
 

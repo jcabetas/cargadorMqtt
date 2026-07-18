@@ -235,6 +235,7 @@
 #define LINE_OSCILADOR              PAL_LINE(GPIOA, GPIOA_TIM2_CH3)
 
 #define LINE_SENSOR                 PAL_LINE(GPIOA, GPIOA_SENSOR)
+#define LINE_LED                    PAL_LINE(GPIOB, GPIOB_LED)
 #define LINE_I2C1SDA                PAL_LINE(GPIOB, GPIOB_SDA1)
 #define LINE_I2C1SCL                PAL_LINE(GPIOB, GPIOB_SCL1)
 
