@@ -179,11 +179,12 @@ void actualizakWh(float valor, bool esValido)
 
 
 
-static THD_WORKING_AREA(wamodbus, 3000);
+static THD_WORKING_AREA(wamodbus, 4000);
 static THD_FUNCTION(modbusMasterThrd, arg) {
     (void)arg;
     uint16_t msDelay = 999; // para que se actualicen todas las medidas
     uint8_t error;
+    uint8_t contador = 0;
     char bufferLCD[25];
     chRegSetThreadName("modbus");
     while (true) {
@@ -213,9 +214,11 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
             }
 
             if (!cargKona->getOsciladorOculto())
-                snprintf(bufferLCD,sizeof(bufferLCD),"Isp:%4.1f", Isetpoint);
+                snprintf(bufferLCD,sizeof(bufferLCD),"%d Isp:%4.1f", contador, Isetpoint);
             else
-                snprintf(bufferLCD,sizeof(bufferLCD),"Sin PWM");
+                snprintf(bufferLCD,sizeof(bufferLCD),"%d Sin PWM", contador);
+            if (++contador>9)
+              contador = 0;
             ponEnColaLCD(2,bufferLCD);
         }
         else if (medModeloHR->getValor() == 2)  // sdm630ct
@@ -251,9 +254,11 @@ static THD_FUNCTION(modbusMasterThrd, arg) {
                 ponEnColaLCD(1,bufferLCD);
             }
             if (!cargKona->getOsciladorOculto())
-                snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Isp:%4.1f", numFasesReal,Isetpoint);
+                snprintf(bufferLCD,sizeof(bufferLCD),"%d Isp:%4.1f", contador, Isetpoint);
             else
-                snprintf(bufferLCD,sizeof(bufferLCD),"#Freal:%d Sin PWM", numFasesReal);
+                snprintf(bufferLCD,sizeof(bufferLCD),"%d Sin PWM", contador);
+            if (++contador>9)
+              contador = 0;
             ponEnColaLCD(2,bufferLCD);
         }
 //        if (!error)

@@ -100,6 +100,13 @@ static THD_FUNCTION(ThreadXiao, arg) {
                     chThdSleepMilliseconds(1000);
                     NVIC_SystemReset();
                 }
+                // imprimir en display?
+                if (doc["orden"] && !strcmp("print",doc["orden"]))
+                {
+                  const char* msg = doc["msg"];
+                  if (msg)
+                    ponEnColaLCD(3,msg);
+                }
                 // tengo que enviar estado actual ("orden\":\"diestado\") ?
                 if (doc["orden"] && !strcmp("diestado",doc["orden"]))
                 {
@@ -214,9 +221,10 @@ static THD_FUNCTION(ThreadXiao, arg) {
         if (evt & EVENT_MASK(2)) // Me han pedido que envie medidas
         {
             chprintf((BaseSequentialStream *)&SD1,"%s\n",bufferMedidas);
-            snprintf(bufferLCD,sizeof(bufferLCD),"=> ");
-            strncpy(&bufferLCD[3], bufferMedidas,18);
-            ponEnColaLCD(3,bufferLCD);
+            if (bufferMedidas[0]==0)
+              ponEnColaLCD(3,"=> medidas ??");
+            else
+              ponEnColaLCD(3,"=> medidas");
             bufferMedidas[0] = (char) 0;
         }
     }
