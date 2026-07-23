@@ -26,11 +26,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>cargadorXC6</name>
-			<type>2</type>
-			<location>/home/joaquin/Desarrollos/cargadorHA/cargadorXC6</location>
-		</link>
-		<link>
 			<name>librerias</name>
 			<type>2</type>
 			<location>/home/joaquin/Desarrollos/librerias</location>
